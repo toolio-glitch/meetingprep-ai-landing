@@ -1,0 +1,40 @@
+/* MeetingPrep AI Chrome Extension - Content Script Styles */
+
+.meetingprep-btn {
+  transition: all 0.2s ease !important;
+}
+
+.meetingprep-btn:hover {
+  background: rgba(66, 133, 244, 1) !important;
+  transform: scale(1.1) !important;
+}
+
+/* Brief tooltip/popup styles */
+.meetingprep-tooltip {
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  z-index: 10000;
+  max-width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.meetingprep-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+/* Highlight selected events */
+[data-eventid].meetingprep-selected {
+  outline: 2px solid #4285f4 !important;
+  outline-offset: 1px !important;
+}

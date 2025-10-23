@@ -67,7 +67,7 @@ export default function Home() {
               Built specifically for sales professionals who value their time.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
               <div className="flex items-center space-x-2 text-gray-600">
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -84,8 +84,23 @@ export default function Home() {
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>Launching Early 2025</span>
+                <span>Available Now</span>
               </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <a
+                href="/signup"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+              >
+                Start Free Trial
+              </a>
+              <a
+                href="/login"
+                className="border border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all duration-200"
+              >
+                Sign In
+              </a>
             </div>
           </div>
         </div>
@@ -335,6 +350,21 @@ export default function Home() {
           <p className="text-sm text-gray-500 mt-2">
             Designed for sales professionals who value their time.
           </p>
+          
+          {/* Legal Links */}
+          <div className="mt-6 flex items-center justify-center space-x-6 text-xs text-gray-400">
+            <a href="/privacy" className="hover:text-gray-600 transition-colors">
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a href="/terms" className="hover:text-gray-600 transition-colors">
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a href="mailto:legal@meetingprep.ai" className="hover:text-gray-600 transition-colors">
+              Contact
+            </a>
+          </div>
         </div>
       </footer>
     </div>

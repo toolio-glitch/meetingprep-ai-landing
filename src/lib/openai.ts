@@ -1,0 +1,145 @@
+import OpenAI from 'openai';
+
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+export interface MeetingData {
+  title: string;
+  date: string;
+  time: string;
+  attendees: string[] | string;
+  description?: string;
+  location?: string;
+}
+
+export async function generateMeetingBrief(meeting: MeetingData): Promise<string> {
+  try {
+    // Format attendees for the prompt
+    let attendeesList = 'None listed';
+    if (meeting.attendees) {
+      if (Array.isArray(meeting.attendees)) {
+        attendeesList = meeting.attendees.join(', ');
+      } else {
+        attendeesList = meeting.attendees;
+      }
+    }
+
+    // Create a comprehensive prompt for meeting preparation
+    const prompt = `You are an AI meeting preparation assistant. Generate a comprehensive, professional meeting brief based on the following information:
+
+Meeting Title: ${meeting.title || 'Untitled Meeting'}
+Date: ${meeting.date || 'Not specified'}
+Time: ${meeting.time || 'Not specified'}
+Attendees: ${attendeesList}
+Location: ${meeting.location || 'Not specified'}
+Description: ${meeting.description || 'No additional context provided'}
+
+Please generate a structured meeting brief that includes:
+
+1. **Meeting Overview** - Brief summary of the meeting purpose
+2. **Attendee Analysis** - Insights about the attendees and their likely priorities
+3. **Key Talking Points** - Specific discussion topics and questions to drive the conversation
+4. **Strategic Objectives** - What to accomplish in this meeting
+5. **Preparation Checklist** - Action items to complete before the meeting
+6. **Follow-up Actions** - Suggested next steps after the meeting
+
+Make the brief:
+- Professional and actionable
+- Tailored to the specific meeting context
+- Include specific questions and conversation starters
+- Provide strategic insights based on the meeting type and attendees
+- Be concise but comprehensive (aim for 300-500 words)
+
+Format the response in clean markdown with clear headers and bullet points.`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini", // Cost-effective model
+      messages: [
+        {
+          role: "system",
+          content: "You are a professional meeting preparation assistant. Generate comprehensive, actionable meeting briefs that help professionals have more productive conversations. Focus on practical insights, strategic questions, and clear action items."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      max_tokens: 1000,
+      temperature: 0.7,
+    });
+
+    const brief = completion.choices[0]?.message?.content;
+    
+    if (!brief) {
+      throw new Error('No response generated from OpenAI');
+    }
+
+    return brief;
+
+  } catch (error) {
+    console.error('OpenAI API Error:', error);
+    
+    // Fallback to enhanced mock brief if OpenAI fails
+    return generateFallbackBrief(meeting);
+  }
+}
+
+function generateFallbackBrief(meeting: MeetingData): string {
+  const attendeesList = Array.isArray(meeting.attendees) 
+    ? meeting.attendees.join(', ') 
+    : meeting.attendees || 'None listed';
+
+  return `# Meeting Brief: ${meeting.title || 'Untitled Meeting'}
+
+## Meeting Overview
+This meeting is scheduled for ${meeting.date || 'an unspecified date'} at ${meeting.time || 'an unspecified time'} with ${attendeesList}.
+
+## Attendee Analysis
+- **Primary Attendees:** ${attendeesList}
+- **Meeting Context:** ${meeting.description || 'General business discussion'}
+- **Preparation Focus:** Build rapport and establish clear objectives
+
+## Key Talking Points
+
+### 1. Opening & Rapport Building
+- Reference recent company developments or industry trends
+- Ask about current challenges and priorities
+- Acknowledge any previous interactions or mutual connections
+
+### 2. Strategic Discussion Points
+- "What's your biggest priority this quarter?"
+- "How are you currently handling [relevant business process]?"
+- "What would success look like for this initiative?"
+- "What obstacles are you facing that we should address?"
+
+### 3. Value-Focused Questions
+- Understand their decision-making process
+- Identify key stakeholders and influencers
+- Explore budget and timeline considerations
+- Discuss implementation requirements
+
+## Strategic Objectives
+- Establish clear meeting outcomes and next steps
+- Build stronger professional relationships
+- Identify opportunities for collaboration
+- Address any concerns or objections
+
+## Preparation Checklist
+- [ ] Review recent communications with attendees
+- [ ] Research attendee companies and recent news
+- [ ] Prepare relevant case studies or examples
+- [ ] Set clear agenda and time allocations
+- [ ] Prepare follow-up materials
+
+## Follow-up Actions
+- Send meeting summary within 24 hours
+- Schedule any agreed-upon next meetings
+- Provide requested information or resources
+- Connect with additional stakeholders if needed
+
+---
+*Brief generated by MeetingPrep AI • ${new Date().toLocaleString()}*
+*Note: OpenAI integration temporarily unavailable - using enhanced fallback brief*`;
+}

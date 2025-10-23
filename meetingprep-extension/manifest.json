@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "MeetingPrep AI",
+  "version": "1.0.0",
+  "description": "Get AI-powered meeting briefs without leaving your calendar",
+  
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  
+  "host_permissions": [
+    "https://calendar.google.com/*",
+    "https://localhost:3001/*",
+    "https://*.meetingprep.ai/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": ["https://calendar.google.com/*"],
+      "js": ["content-script.js"],
+      "css": ["content-script.css"]
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "MeetingPrep AI"
+  },
+  
+  "background": {
+    "service_worker": "background.js"
+  },
+  
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html", "content-script.css", "brief-viewer.html", "brief-viewer.js"],
+      "matches": ["https://calendar.google.com/*", "chrome-extension://*/*"]
+    }
+  ]
+}
