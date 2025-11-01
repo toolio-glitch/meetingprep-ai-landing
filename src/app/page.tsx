@@ -17,7 +17,7 @@ export default function Home() {
       await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData as Record<string, string>).toString(),
+        body: new URLSearchParams(Object.fromEntries(formData.entries()) as Record<string, string>).toString(),
       });
       setIsSubmitted(true);
     } catch (error) {
