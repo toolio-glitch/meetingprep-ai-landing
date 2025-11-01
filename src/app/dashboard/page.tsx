@@ -20,10 +20,10 @@ export default function Dashboard() {
   const [_meetings, _setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -36,9 +36,10 @@ export default function Dashboard() {
     };
 
     getUser();
-  }, [router, supabase.auth]);
+  }, [router]);
 
   const handleSignOut = async () => {
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push('/');
   };

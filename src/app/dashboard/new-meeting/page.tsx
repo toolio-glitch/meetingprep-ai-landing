@@ -21,10 +21,10 @@ export default function NewMeeting() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
+      const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -37,7 +37,7 @@ export default function NewMeeting() {
     };
 
     getUser();
-  }, [router, supabase.auth]);
+  }, [router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
