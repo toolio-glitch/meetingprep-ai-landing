@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase-auth';
 import { useRouter } from 'next/navigation';
 
 export default function NewMeeting() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
@@ -279,3 +279,5 @@ export default function NewMeeting() {
     </div>
   );
 }
+
+

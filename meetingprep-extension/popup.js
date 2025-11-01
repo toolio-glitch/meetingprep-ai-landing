@@ -1,6 +1,6 @@
 // MeetingPrep AI Chrome Extension - Popup Script
 
-const API_BASE = 'http://localhost:3000'; // Your Next.js backend
+const API_BASE = 'http://localhost:3000'; // Local testing - CHANGE BACK TO PRODUCTION BEFORE SUBMITTING
 
 class MeetingPrepPopup {
   constructor() {
@@ -131,24 +131,20 @@ class MeetingPrepPopup {
       // Wait a bit for content script to initialize
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Get meeting data from content script
+      // Try to get real meeting data from content script
       try {
         const response = await chrome.tabs.sendMessage(tab.id, { action: 'getMeetingData' });
-        
-        console.log('Content script response:', response);
-        
-        if (response && response.meeting && response.meeting.title) {
+        if (response && response.meeting) {
+          console.log('Real meeting data received:', response.meeting);
           this.currentMeeting = response.meeting;
-          this.displayMeetingInfo(response.meeting);
+          this.displayMeetingInfo(this.currentMeeting);
           document.getElementById('generate-brief-btn').disabled = false;
-          console.log('Using real meeting data:', this.currentMeeting);
         } else {
-          console.log('No valid meeting data from content script, using fallback');
+          console.log('No meeting data received, using test data');
           this.createTestMeeting();
         }
-      } catch (messageError) {
-        console.error('Message error:', messageError);
-        // Fallback: create a test meeting for demo purposes
+      } catch (error) {
+        console.log('Failed to get real meeting data, using test data:', error);
         this.createTestMeeting();
       }
     } catch (error) {
@@ -161,22 +157,34 @@ class MeetingPrepPopup {
     // Use the meeting data we can see in the popup display
     this.currentMeeting = {
       title: 'big nhs meeting',
-      date: 'Thursday, 23 October',
-      time: '10:00 – 11:00pm',
+      date: '2024-10-23',
+      time: '22:00',
       attendees: ['connortoorish1@gmail.com', 'ojstanford135@gmail.com', 'Olivia Stanford'],
       description: 'NHS meeting with team members'
     };
     
     this.displayMeetingInfo(this.currentMeeting);
     document.getElementById('generate-brief-btn').disabled = false;
-    this.showMeetingMessage('Using detected meeting data from calendar');
+    console.log('Test meeting created and button enabled');
   }
 
   displayMeetingInfo(meeting) {
     const detailsEl = document.getElementById('meeting-details');
+    
+    // Convert date to display format if it's in YYYY-MM-DD format
+    let displayDate = meeting.date;
+    if (meeting.date && meeting.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      const date = new Date(meeting.date);
+      displayDate = date.toLocaleDateString('en-GB', { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long' 
+      });
+    }
+    
     detailsEl.innerHTML = `
       <div style="margin-bottom: 8px;"><strong>Title:</strong> ${meeting.title || 'Untitled Meeting'}</div>
-      <div style="margin-bottom: 8px;"><strong>Date:</strong> ${meeting.date || 'Not specified'}</div>
+      <div style="margin-bottom: 8px;"><strong>Date:</strong> ${displayDate || 'Not specified'}</div>
       <div style="margin-bottom: 8px;"><strong>Attendees:</strong> ${meeting.attendees?.join(', ') || 'None listed'}</div>
     `;
   }
@@ -196,7 +204,7 @@ class MeetingPrepPopup {
     try {
       this.showLoading('Generating AI brief...');
       
-      const authData = await chrome.storage.local.get(['authToken']);
+      const authData = await chrome.storage.local.get(['authToken', 'user']);
       
       const response = await fetch(`${API_BASE}/api/extension/generate-brief`, {
         method: 'POST',
@@ -205,14 +213,15 @@ class MeetingPrepPopup {
           'Authorization': `Bearer ${authData.authToken}`
         },
         body: JSON.stringify({
-          meeting: this.currentMeeting
+          meeting: this.currentMeeting,
+          userId: authData.user?.id || 'f932d101-9801-4bf0-9584-fcb88dabede6'
         }),
       });
 
       const data = await response.json();
       
-      if (response.ok && data.brief) {
-        this.displayBrief(data.brief);
+      if (response.ok && data.success && data.brief && data.brief.content) {
+        this.displayBrief(data.brief.content);
         this.showMessage('Brief generated successfully!', 'success');
       } else {
         throw new Error(data.error || 'Failed to generate brief');
@@ -228,9 +237,8 @@ class MeetingPrepPopup {
   displayBrief(brief) {
     const briefEl = document.getElementById('brief-content');
     
-    // Show more content in popup (first 600 characters for better preview)
-    const preview = brief.length > 600 ? brief.substring(0, 600) + '...\n\n[Click "View Full Brief" to see complete content]' : brief;
-    briefEl.innerHTML = preview.replace(/\n/g, '<br>');
+    // Show full content in scrollable popup
+    briefEl.innerHTML = brief.replace(/\n/g, '<br>');
     briefEl.style.display = 'block';
     
     // Store the full brief data for the viewer

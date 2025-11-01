@@ -14,8 +14,8 @@ interface Meeting {
 }
 
 export default function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
+  const [_meetings, _setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();

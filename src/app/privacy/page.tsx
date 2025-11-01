@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
           <div className="prose prose-lg max-w-none">
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">1. Introduction</h2>
             <p className="mb-4">
-              MeetingPrep AI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Chrome extension and web service.
+              MeetingPrep AI (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Chrome extension and web service.
             </p>
 
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">2. Information We Collect</h2>
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc pl-6 mb-4">
               <li><strong>OpenAI:</strong> For AI-powered brief generation (business-grade API with data protection)</li>
               <li><strong>Supabase:</strong> For secure data storage and user authentication</li>
-              <li><strong>Stripe:</strong> For payment processing (we don't store payment card details)</li>
+              <li><strong>Stripe:</strong> For payment processing (we don&apos;t store payment card details)</li>
               <li><strong>Google Calendar API:</strong> To access your meeting information (with your permission)</li>
             </ul>
 
@@ -109,9 +109,8 @@ export default function PrivacyPolicy() {
               If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:
             </p>
             <div className="bg-gray-100 p-4 rounded-lg">
-              <p><strong>Email:</strong> privacy@meetingprep.ai</p>
-              <p><strong>Address:</strong> [Your Business Address]</p>
-              <p><strong>Data Protection Officer:</strong> [Your Name or DPO Contact]</p>
+              <p><strong>Email:</strong> connortoorish@icloud.com</p>
+              <p><strong>Address:</strong> UK-based</p>
             </div>
           </div>
         </div>
@@ -119,3 +118,5 @@ export default function PrivacyPolicy() {
     </div>
   );
 }
+
+

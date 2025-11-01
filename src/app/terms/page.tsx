@@ -9,7 +9,7 @@ export default function TermsOfService() {
           <div className="prose prose-lg max-w-none">
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">1. Acceptance of Terms</h2>
             <p className="mb-4">
-              By accessing or using MeetingPrep AI ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+              By accessing or using MeetingPrep AI (&quot;the Service&quot;), you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you disagree with any part of these terms, you may not access the Service.
             </p>
 
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">2. Description of Service</h2>
@@ -39,7 +39,7 @@ export default function TermsOfService() {
             
             <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">4.1 Subscription Plans</h3>
             <ul className="list-disc pl-6 mb-4">
-              <li><strong>Individual Plan:</strong> £49/month for single users</li>
+              <li><strong>Individual Plan:</strong> £19/month for single users</li>
               <li><strong>Team Plan:</strong> £199/month for up to 10 users</li>
               <li><strong>Free Trial:</strong> 7-day free trial for new users</li>
             </ul>
@@ -48,7 +48,7 @@ export default function TermsOfService() {
             <ul className="list-disc pl-6 mb-4">
               <li>Subscriptions are billed monthly in advance</li>
               <li>All fees are non-refundable except as required by law</li>
-              <li>We may change pricing with 30 days' notice</li>
+              <li>We may change pricing with 30 days&apos; notice</li>
               <li>Failed payments may result in service suspension</li>
             </ul>
 
@@ -116,7 +116,7 @@ export default function TermsOfService() {
 
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">11. Disclaimer of Warranties</h2>
             <p className="mb-4">
-              The Service is provided "as is" and "as available" without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
+              The Service is provided &quot;as is&quot; and &quot;as available&quot; without warranties of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
             </p>
 
             <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">12. Indemnification</h2>
@@ -144,9 +144,9 @@ export default function TermsOfService() {
               If you have any questions about these Terms, please contact us at:
             </p>
             <div className="bg-gray-100 p-4 rounded-lg">
-              <p><strong>Email:</strong> legal@meetingprep.ai</p>
-              <p><strong>Address:</strong> [Your Business Address]</p>
-              <p><strong>Company:</strong> MeetingPrep AI Ltd</p>
+              <p><strong>Email:</strong> connortoorish@icloud.com</p>
+              <p><strong>Address:</strong> UK-based</p>
+              <p><strong>Company:</strong> MeetingPrep AI</p>
             </div>
 
             <div className="mt-8 p-4 bg-blue-50 rounded-lg">
@@ -160,3 +160,5 @@ export default function TermsOfService() {
     </div>
   );
 }
+
+

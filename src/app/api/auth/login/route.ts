@@ -9,7 +9,7 @@ function addCorsHeaders(response: NextResponse) {
   return response;
 }
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   return addCorsHeaders(new NextResponse(null, { status: 200 }));
 }
 

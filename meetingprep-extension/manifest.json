@@ -13,7 +13,7 @@
   
   "host_permissions": [
     "https://calendar.google.com/*",
-    "https://localhost:3001/*",
+    "http://localhost:3000/*",
     "https://*.meetingprep.ai/*"
   ],
   

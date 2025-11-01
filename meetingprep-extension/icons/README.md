@@ -10,3 +10,5 @@ For now, you can use any PNG images with these dimensions, or create simple colo
 Recommended: Use a blue/purple gradient square with "MP" text or a calendar/AI icon.
 
 You can generate these at: https://favicon.io/ or use any image editor.
+
+

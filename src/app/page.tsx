@@ -17,7 +17,7 @@ export default function Home() {
       await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData as any).toString(),
+        body: new URLSearchParams(formData as Record<string, string>).toString(),
       });
       setIsSubmitted(true);
     } catch (error) {
@@ -211,7 +211,7 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-4">AI Research Engine</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our AI automatically researches attendees' LinkedIn profiles, company news, recent posts, and finds mutual connections.
+                Our AI automatically researches attendees&apos; LinkedIn profiles, company news, recent posts, and finds mutual connections.
               </p>
             </div>
 
@@ -327,8 +327,8 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">You're on the list!</h3>
-                <p className="text-gray-600">We'll notify you as soon as MeetingPrep AI is ready for early access.</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">You&apos;re on the list!</h3>
+                <p className="text-gray-600">We&apos;ll notify you as soon as MeetingPrep AI is ready for early access.</p>
               </div>
             )}
           </div>
