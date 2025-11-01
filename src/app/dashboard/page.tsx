@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase-auth';
 import { useRouter } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 interface Meeting {
   id: string;
   title: string;

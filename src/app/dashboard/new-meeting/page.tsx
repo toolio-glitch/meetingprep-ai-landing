@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase-auth';
 import { useRouter } from 'next/navigation';
 
+export const dynamic = 'force-dynamic';
+
 export default function NewMeeting() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null);
   const [loading, setLoading] = useState(true);
