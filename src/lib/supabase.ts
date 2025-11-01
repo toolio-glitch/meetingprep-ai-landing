@@ -12,6 +12,6 @@ export function getSupabaseClient() {
   return createClient(supabaseUrl, supabaseAnonKey);
 }
 
-// Export a getter for backwards compatibility
-export const supabase = getSupabaseClient();
+// Note: Use getSupabaseClient() instead of exporting supabase directly
+// to prevent build-time initialization errors
 
