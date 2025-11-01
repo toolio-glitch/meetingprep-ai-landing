@@ -152,9 +152,10 @@ export async function POST(request: NextRequest) {
       console.log('Database save successful:', result);
     } catch (dbError) {
       console.error('Database save error:', dbError);
+      const errorMessage = dbError instanceof Error ? dbError.message : 'Unknown database error';
       const response = NextResponse.json({ 
         success: false,
-        error: `Database error: ${dbError.message}` 
+        error: `Database error: ${errorMessage}` 
       } as BriefGenerationResponse, { status: 500 });
       return addCorsHeaders(response);
     }
