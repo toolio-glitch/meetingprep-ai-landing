@@ -10,10 +10,22 @@ import type {
   MeetingData 
 } from './database.types'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+// Lazy initialization to prevent build-time errors
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error('Supabase environment variables are not set');
+  }
+  
+  return createClient<Database>(supabaseUrl, supabaseAnonKey);
+}
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey)
+// Export a getter function instead of direct client
+export function getSupabase() {
+  return getSupabaseClient();
+}
 
 // Meeting operations
 export class MeetingService {
@@ -32,6 +44,7 @@ export class MeetingService {
       calendar_event_id: meetingData.calendar_event_id || null,
     }
 
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('meetings')
       .insert(meetingInsert as any)
@@ -47,6 +60,7 @@ export class MeetingService {
   }
 
   static async getMeeting(meetingId: string): Promise<Meeting | null> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('meetings')
       .select('*')
@@ -62,6 +76,7 @@ export class MeetingService {
   }
 
   static async getUserMeetings(userId: string, limit = 10): Promise<Meeting[]> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('meetings')
       .select('*')
@@ -78,6 +93,7 @@ export class MeetingService {
   }
 
   static async findMeetingByCalendarId(userId: string, calendarEventId: string): Promise<Meeting | null> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('meetings')
       .select('*')
@@ -111,6 +127,7 @@ export class BriefService {
       generation_time_ms: generationTimeMs || null,
     }
 
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('briefs')
       .insert(briefInsert as any)
@@ -126,6 +143,7 @@ export class BriefService {
   }
 
   static async getBrief(briefId: string): Promise<Brief | null> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('briefs')
       .select('*')
@@ -141,6 +159,7 @@ export class BriefService {
   }
 
   static async getMeetingBrief(meetingId: string): Promise<Brief | null> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('briefs')
       .select('*')
@@ -158,6 +177,7 @@ export class BriefService {
   }
 
   static async getUserBriefs(userId: string, limit = 10): Promise<Brief[]> {
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('briefs')
       .select('*')
@@ -179,6 +199,7 @@ export class SubscriptionService {
   static async getUserSubscription(userId: string): Promise<UserSubscription | null> {
     console.log('Querying subscription for userId:', userId)
     
+    const supabase = getSupabase();
     const { data, error } = await supabase
       .from('user_subscriptions')
       .select('*')
@@ -196,6 +217,7 @@ export class SubscriptionService {
   }
 
   static async incrementBriefUsage(userId: string): Promise<boolean> {
+    const supabase = getSupabase();
     const { error } = await supabase.rpc('increment_briefs_used', { user_id: userId } as any)
 
     if (error) {
