@@ -1,5 +1,9 @@
 // MeetingPrep AI - Brief Viewer Script
 
+// Get API base URL - check popup.js constant or default to localhost for development
+// This will be updated when production URL is set in popup.js
+const API_BASE = 'http://localhost:3000'; // Will use same URL as popup.js once updated
+
 class BriefViewer {
   constructor() {
     this.briefData = null;
@@ -159,6 +163,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
   document.getElementById('back-btn').addEventListener('click', () => {
     window.close();
+  });
+  
+  document.getElementById('view-all-btn').addEventListener('click', () => {
+    // Open extension page instead of web dashboard
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('all-briefs.html')
+    });
   });
 });
 

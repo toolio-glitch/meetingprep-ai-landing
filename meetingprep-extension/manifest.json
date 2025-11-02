@@ -4,6 +4,12 @@
   "version": "1.0.0",
   "description": "Get AI-powered meeting briefs without leaving your calendar",
   
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  
   "permissions": [
     "activeTab",
     "storage",
@@ -37,7 +43,7 @@
   
   "web_accessible_resources": [
     {
-      "resources": ["popup.html", "content-script.css", "brief-viewer.html", "brief-viewer.js"],
+      "resources": ["popup.html", "content-script.css", "brief-viewer.html", "brief-viewer.js", "all-briefs.html", "all-briefs.js"],
       "matches": ["https://calendar.google.com/*", "chrome-extension://*/*"]
     }
   ]

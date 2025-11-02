@@ -83,3 +83,5 @@
 3. Rename ZIP to something like `meetingprep-ai-v1.0.0.zip`
 4. Upload to Chrome Web Store
 
+
+

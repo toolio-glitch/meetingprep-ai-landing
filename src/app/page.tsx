@@ -1,31 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-
 export default function Home() {
-  const [email, setEmail] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Submit to Netlify Forms
-    const form = e.target as HTMLFormElement;
-    const formData = new FormData(form);
-    
-    try {
-      await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(Object.fromEntries(formData.entries()) as Record<string, string>).toString(),
-      });
-      setIsSubmitted(true);
-    } catch (error) {
-      console.error('Form submission error:', error);
-      // Still show success for demo purposes
-      setIsSubmitted(true);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -38,9 +13,6 @@ export default function Home() {
                 <span className="text-white font-bold text-sm">M</span>
               </div>
               <span className="text-xl font-semibold text-gray-900">MeetingPrep AI</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Coming Soon</span>
             </div>
           </div>
         </div>
@@ -78,22 +50,21 @@ export default function Home() {
                 <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-                <span>800%+ ROI</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-600">
-                <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
                 <span>Available Now</span>
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <a
-                href="/signup"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                href="https://chrome.google.com/webstore"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
               >
-                Start Free Trial
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Install Extension
               </a>
               <a
                 href="/login"
@@ -142,7 +113,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-start">
                   <span className="text-red-500 mr-3 mt-1">•</span>
-                  <span className="text-gray-700">2-3 hours weekly lost to meeting preparation</span>
+                  <span className="text-gray-700">2+ hours weekly lost to meeting preparation</span>
                 </li>
               </ul>
             </div>
@@ -186,11 +157,11 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">How It Works</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Three simple steps to transform your meeting preparation workflow
+              Two simple steps to transform your meeting preparation workflow
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="text-center group">
               <div className="mb-8">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-200">
@@ -209,21 +180,9 @@ export default function Home() {
                   <span className="text-2xl font-bold text-white">2</span>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">AI Research Engine</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-4">AI Research & Brief Generation</h3>
               <p className="text-gray-600 leading-relaxed">
-                Our AI automatically researches attendees&apos; LinkedIn profiles, company news, recent posts, and finds mutual connections.
-              </p>
-            </div>
-
-            <div className="text-center group">
-              <div className="mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-200">
-                  <span className="text-2xl font-bold text-white">3</span>
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Get Your Brief</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Receive a personalized meeting brief with key insights, conversation starters, and strategic talking points.
+                Our AI automatically researches attendees&apos; LinkedIn profiles, company news, and finds mutual connections, then delivers a personalized brief with key insights, conversation starters, and strategic talking points.
               </p>
             </div>
           </div>
@@ -262,76 +221,34 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-20">
         <div className="max-w-2xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">Get Early Access</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Ready to Transform Your Meetings?</h2>
           <p className="text-xl text-gray-600 mb-12">
-            Be among the first to experience AI-powered meeting preparation. Join our exclusive waitlist.
+            Install the Chrome extension and start generating AI-powered meeting briefs in seconds. Sign up directly in the extension after installing.
           </p>
 
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 max-w-md mx-auto">
-            {!isSubmitted ? (
-              <>
-                <form 
-                  onSubmit={handleSubmit} 
-                  className="space-y-6"
-                  name="waitlist"
-                  method="POST"
-                  data-netlify="true"
-                  netlify-honeypot="bot-field"
-                >
-                  <input type="hidden" name="form-name" value="waitlist" />
-                  <input type="hidden" name="bot-field" />
-                  <div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email address"
-                      required
-                      className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg placeholder-gray-500"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
-                  >
-                    Join Waitlist
-                  </button>
-                </form>
-                
-                <div className="mt-6 flex items-center justify-center space-x-6 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    No spam
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    GDPR Compliant
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    Unsubscribe anytime
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="text-center py-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">You&apos;re on the list!</h3>
-                <p className="text-gray-600">We&apos;ll notify you as soon as MeetingPrep AI is ready for early access.</p>
-              </div>
-            )}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <a
+              href="https://chrome.google.com/webstore"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Install from Chrome Web Store
+            </a>
+            <a
+              href="/login"
+              className="border border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-all duration-200"
+            >
+              Sign In to Dashboard
+            </a>
           </div>
+          
+          <p className="mt-6 text-sm text-gray-500">
+            After installation, open the extension to create your account and get started
+          </p>
         </div>
       </section>
 
@@ -345,10 +262,7 @@ export default function Home() {
             <span className="text-lg font-semibold text-gray-900">MeetingPrep AI</span>
           </div>
           <p className="text-gray-600">
-            &copy; 2024 MeetingPrep AI. Built by a doctor who understands efficiency.
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Designed for sales professionals who value their time.
+            &copy; 2024 MeetingPrep AI. Built by a doctor who understands efficiency. Designed for sales professionals who value their time.
           </p>
           
           {/* Legal Links */}

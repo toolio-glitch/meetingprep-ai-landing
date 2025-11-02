@@ -108,6 +108,24 @@ export class MeetingService {
 
     return data
   }
+
+  static async deleteMeeting(meetingId: string, userId: string): Promise<boolean> {
+    const supabase = getSupabase();
+    // RLS will ensure user can only delete their own meetings
+    const { error } = await supabase
+      .from('meetings')
+      .delete()
+      .eq('id', meetingId)
+      .eq('user_id', userId)
+
+    if (error) {
+      console.error('Error deleting meeting:', error)
+      return false
+    }
+
+    // Briefs are automatically deleted due to ON DELETE CASCADE
+    return true
+  }
 }
 
 // Brief operations
@@ -290,5 +308,41 @@ export class MeetingPrepService {
     const brief = await BriefService.getMeetingBrief(meetingId)
     
     return { meeting, brief }
+  }
+
+  static async getUserMeetingsWithBriefs(userId: string, limit = 50): Promise<Array<{ meeting: Meeting; brief: Brief | null }>> {
+    const supabase = getSupabase();
+    
+    // Fetch meetings with their briefs using a join
+    const { data, error } = await supabase
+      .from('meetings')
+      .select(`
+        *,
+        briefs (
+          id,
+          content,
+          created_at,
+          ai_model,
+          generation_time_ms
+        )
+      `)
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error fetching meetings with briefs:', error)
+      return []
+    }
+
+    if (!data) return []
+
+    // Transform the data to match our expected format
+    return data.map((meeting: any) => ({
+      meeting: meeting as Meeting,
+      brief: Array.isArray(meeting.briefs) && meeting.briefs.length > 0 
+        ? meeting.briefs[0] as Brief 
+        : null
+    }))
   }
 }

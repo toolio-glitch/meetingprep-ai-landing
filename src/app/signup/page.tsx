@@ -18,17 +18,26 @@ export default function SignupPage() {
     setMessage('')
 
     const supabase = createClient()
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
     })
 
     if (error) {
-      setMessage(error.message)
+      console.error('Signup error:', error)
+      setMessage(error.message || 'An error occurred during signup. Please try again.')
+      setLoading(false)
     } else {
-      setMessage('Check your email for the confirmation link!')
+      // Check if user was auto-confirmed (email confirmation disabled)
+      if (data.session) {
+        // User is already signed in - redirect to dashboard
+        window.location.href = '/dashboard'
+      } else {
+        // Email confirmation required
+        setMessage('Check your email for the confirmation link!')
+        setLoading(false)
+      }
     }
-    setLoading(false)
   }
 
   return (
@@ -67,7 +76,7 @@ export default function SignupPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
@@ -85,7 +94,7 @@ export default function SignupPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-500">

@@ -39,6 +39,10 @@ class MeetingPrepPopup {
     
     // Main functionality listeners
     document.getElementById('generate-brief-btn').addEventListener('click', () => this.generateBrief());
+    document.getElementById('view-all-briefs-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.openDashboard();
+    });
     
     // Enter key for login
     document.getElementById('password').addEventListener('keypress', (e) => {
@@ -103,6 +107,11 @@ class MeetingPrepPopup {
 
   openSignupPage() {
     chrome.tabs.create({ url: `${API_BASE}/signup` });
+  }
+
+  openDashboard() {
+    // Open extension page instead of web dashboard
+    chrome.tabs.create({ url: chrome.runtime.getURL('all-briefs.html') });
   }
 
   async loadCurrentMeeting() {
