@@ -39,3 +39,5 @@ CREATE POLICY "Users can insert own subscription" ON user_subscriptions
         current_setting('role') = 'service_role'
     );
 
+
+

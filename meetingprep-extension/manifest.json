@@ -19,7 +19,7 @@
   
   "host_permissions": [
     "https://calendar.google.com/*",
-    "http://localhost:3000/*",
+    "https://meetingprep-ai-vercel.vercel.app/*",
     "https://*.meetingprep.ai/*"
   ],
   

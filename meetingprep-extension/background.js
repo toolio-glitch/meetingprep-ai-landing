@@ -36,7 +36,7 @@ class BackgroundService {
       
       // Open welcome page
       chrome.tabs.create({
-        url: 'http://localhost:3000/signup?source=extension'
+        url: 'https://meetingprep-ai-vercel.vercel.app/signup?source=extension'
       });
       
       // Set default settings
@@ -135,7 +135,7 @@ class BackgroundService {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('http://localhost:3000/api/extension/generate-brief', {
+      const response = await fetch('https://meetingprep-ai-vercel.vercel.app/api/extension/generate-brief', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

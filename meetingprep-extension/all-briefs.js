@@ -1,6 +1,6 @@
 // MeetingPrep AI - All Briefs Viewer Script
 
-const API_BASE = 'http://localhost:3000'; // Will use same URL as popup.js once updated
+const API_BASE = 'https://meetingprep-ai-vercel.vercel.app';
 
 class AllBriefsViewer {
   constructor() {

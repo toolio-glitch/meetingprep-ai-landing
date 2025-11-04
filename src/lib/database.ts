@@ -22,6 +22,23 @@ function getSupabaseClient() {
   return createClient<Database>(supabaseUrl, supabaseAnonKey);
 }
 
+// Service role client for admin operations (bypasses RLS)
+function getSupabaseServiceRoleClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  
+  if (!supabaseUrl || !serviceRoleKey) {
+    throw new Error('Supabase service role key is not set');
+  }
+  
+  return createClient<Database>(supabaseUrl, serviceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+}
+
 // Export a getter function instead of direct client
 export function getSupabase() {
   return getSupabaseClient();
@@ -247,22 +264,102 @@ export class SubscriptionService {
   }
 
   static async canGenerateBrief(userId: string): Promise<{ canGenerate: boolean; usage: { used: number; limit: number; plan: string } }> {
-    const subscription = await this.getUserSubscription(userId)
+    let subscription = await this.getUserSubscription(userId)
     
+    // Auto-create free subscription if one doesn't exist (handles edge cases)
     if (!subscription) {
-      return { 
-        canGenerate: false, 
-        usage: { used: 0, limit: 0, plan: 'none' } 
+      console.log('No subscription found for user, creating free subscription...')
+      try {
+        // Use service role client to bypass RLS for admin operations
+        const supabaseAdmin = getSupabaseServiceRoleClient()
+        const { data, error } = await supabaseAdmin
+          .from('user_subscriptions')
+          .insert({
+            user_id: userId,
+            plan: 'free',
+            briefs_limit: 20, // Increased for launch/testing
+            briefs_used_this_month: 0,
+            status: 'active'
+          })
+          .select()
+          .single()
+        
+        if (error) {
+          console.error('Error creating subscription:', error)
+          // Still allow generation if subscription creation fails (for launch)
+          return {
+            canGenerate: true,
+            usage: { used: 0, limit: 20, plan: 'free' }
+          }
+        }
+        
+        subscription = data
+        console.log('Free subscription created:', subscription)
+      } catch (err) {
+        console.error('Exception creating subscription:', err)
+        // Still allow generation if subscription creation fails (for launch)
+        return {
+          canGenerate: true,
+          usage: { used: 0, limit: 20, plan: 'free' }
+        }
       }
     }
 
-    const canGenerate = subscription.plan !== 'free' || subscription.briefs_used_this_month < subscription.briefs_limit
+    // For launch: temporarily increase limit if user is at free tier limit
+    let effectiveLimit = subscription.briefs_limit
+    if (subscription.plan === 'free' && subscription.briefs_limit < 20) {
+      // Update limit to 20 for existing free users
+      try {
+        const supabaseAdmin = getSupabaseServiceRoleClient()
+        await supabaseAdmin
+          .from('user_subscriptions')
+          .update({ briefs_limit: 20 })
+          .eq('user_id', userId)
+        effectiveLimit = 20
+        subscription.briefs_limit = 20
+        console.log('Updated user limit to 20 for launch')
+      } catch (err) {
+        console.error('Error updating limit:', err)
+      }
+    }
+
+    // TEMPORARY FOR LAUNCH: Allow briefs even if limit exceeded
+    // TODO: Remove this after launch and restore proper limit checking
+    const canGenerate = subscription.plan !== 'free' || subscription.briefs_used_this_month < effectiveLimit || true
+
+    // If user is at limit but we're allowing it, reset their usage to 0 for fresh start
+    if (subscription.plan === 'free' && subscription.briefs_used_this_month >= effectiveLimit && effectiveLimit < 20) {
+      try {
+        const supabaseAdmin = getSupabaseServiceRoleClient()
+        await supabaseAdmin
+          .from('user_subscriptions')
+          .update({ 
+            briefs_limit: 20,
+            briefs_used_this_month: 0 
+          })
+          .eq('user_id', userId)
+        subscription.briefs_limit = 20
+        subscription.briefs_used_this_month = 0
+        effectiveLimit = 20
+        console.log('Reset user usage and limit for launch')
+      } catch (err) {
+        console.error('Error resetting usage:', err)
+      }
+    }
+
+    console.log('Subscription check:', {
+      userId,
+      plan: subscription.plan,
+      used: subscription.briefs_used_this_month,
+      limit: effectiveLimit,
+      canGenerate
+    })
 
     return {
-      canGenerate,
+      canGenerate: true, // Always allow for launch
       usage: {
         used: subscription.briefs_used_this_month,
-        limit: subscription.briefs_limit,
+        limit: effectiveLimit,
         plan: subscription.plan
       }
     }

@@ -1,6 +1,6 @@
 // MeetingPrep AI Chrome Extension - Popup Script
 
-const API_BASE = 'http://localhost:3000'; // Local testing - CHANGE BACK TO PRODUCTION BEFORE SUBMITTING
+const API_BASE = 'https://meetingprep-ai-vercel.vercel.app';
 
 class MeetingPrepPopup {
   constructor() {

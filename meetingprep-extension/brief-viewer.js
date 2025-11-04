@@ -1,8 +1,6 @@
 // MeetingPrep AI - Brief Viewer Script
 
-// Get API base URL - check popup.js constant or default to localhost for development
-// This will be updated when production URL is set in popup.js
-const API_BASE = 'http://localhost:3000'; // Will use same URL as popup.js once updated
+const API_BASE = 'https://meetingprep-ai-vercel.vercel.app';
 
 class BriefViewer {
   constructor() {
