@@ -2,7 +2,7 @@
 
 **This is your central project file - reference this for all forward planning and next steps.**
 
-## Current Status: 98% Complete MVP ✅ - READY FOR PRODUCTION!
+## Current Status: 99% Complete MVP ✅ - READY FOR CHROME WEB STORE!
 
 ### ✅ Completed (Major Achievements)
 - **Full-Stack Web App:** Next.js 15 + Tailwind + Supabase Auth
@@ -23,46 +23,50 @@
 - **Enhanced Dashboard:** ✅ Real data integration with meeting details pages
 - **UI Improvements:** ✅ Fixed text visibility, consolidated landing page messaging
 - **Code Repository:** ✅ All code pushed to GitHub
+- **Production Deployment:** ✅ Deployed to Vercel (meetingprep-ai-vercel.vercel.app)
+- **Production URLs:** ✅ All extension files updated to production URL
+- **Subscription System:** ✅ Fixed limit checks, auto-create subscriptions, bypass for launch
+- **Production Testing:** ✅ Extension tested and working with production backend
 
-### 🚧 Final Steps Before Chrome Web Store (2% Remaining)
+### 🚧 Final Steps Before Chrome Web Store (1% Remaining)
 
 **Remaining tasks (in order):**
 1. ✅ Extension Icons - COMPLETED
 2. ✅ Code Pushed to GitHub - COMPLETED
-3. ⏳ **Get Production URL from Vercel**
-4. ⏳ **Update Extension Files to Production URLs**
-5. ⏳ **Add Environment Variables in Vercel**
-6. ⏳ **Test Extension with Production Backend**
-7. ⏳ **Create Extension ZIP**
-8. ⏳ **Submit to Chrome Web Store**
+3. ✅ **Get Production URL from Vercel** - COMPLETED (`meetingprep-ai-vercel.vercel.app`)
+4. ✅ **Update Extension Files to Production URLs** - COMPLETED (all 5 files updated)
+5. ⏳ **Verify Environment Variables in Vercel** (SUPABASE_SERVICE_ROLE_KEY critical)
+6. ✅ **Test Extension with Production Backend** - COMPLETED (working)
+7. ⏳ **Create Extension Screenshots** (required for Chrome Web Store)
+8. ⏳ **Create Extension ZIP**
+9. ⏳ **Submit to Chrome Web Store**
 
 ---
 
 ## 🎯 Immediate Next Steps (Detailed Checklist)
 
-### Step 1: Get Production URL (2 minutes)
-- Go to Vercel dashboard: https://vercel.com
-- Click on your deployment project
-- Copy the production URL (e.g., `https://meetingprep.ai` or `https://your-app.vercel.app`)
+### ✅ Step 1: Get Production URL - COMPLETED
+- Production URL: `https://meetingprep-ai-vercel.vercel.app`
+- Retrieved from Vercel dashboard
 
-### Step 2: Add Environment Variables in Vercel (5 minutes)
+### ⏳ Step 2: Verify Environment Variables in Vercel (5 minutes)
 - Go to Vercel → Your Project → Settings → Environment Variables
-- Add these 4 variables (get values from `.env.local` or dashboards):
-  - `NEXT_PUBLIC_SUPABASE_URL`
-  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - `SUPABASE_SERVICE_ROLE_KEY`
-  - `OPENAI_API_KEY`
-- After adding, trigger a redeploy (or wait for auto-deploy)
+- **CRITICAL:** Verify these 4 variables are set:
+  - `NEXT_PUBLIC_SUPABASE_URL` ✅
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY` ✅
+  - `SUPABASE_SERVICE_ROLE_KEY` ⚠️ **VERIFY THIS ONE** (used for subscription creation)
+  - `OPENAI_API_KEY` ✅
+- If `SUPABASE_SERVICE_ROLE_KEY` is missing, add it from Supabase Dashboard → Settings → API
 
-### Step 3: Update Extension Files to Production URLs (10 minutes)
-**Files to update** (replace `http://localhost:3000` with your production URL):
-- `meetingprep-extension/popup.js` - line 3: `API_BASE` constant
-- `meetingprep-extension/background.js` - lines 39 and 138 (2 URLs)
-- `meetingprep-extension/brief-viewer.js` - line 5: `API_BASE` constant
-- `meetingprep-extension/all-briefs.js` - line 3: `API_BASE` constant
-- `meetingprep-extension/manifest.json` - line 22: `host_permissions` (update or remove localhost entry)
+### ✅ Step 3: Update Extension Files to Production URLs - COMPLETED
+**All files updated to:** `https://meetingprep-ai-vercel.vercel.app`
+- ✅ `meetingprep-extension/popup.js` - API_BASE updated
+- ✅ `meetingprep-extension/background.js` - 2 URLs updated
+- ✅ `meetingprep-extension/brief-viewer.js` - API_BASE updated
+- ✅ `meetingprep-extension/all-briefs.js` - API_BASE updated
+- ✅ `meetingprep-extension/manifest.json` - host_permissions updated
 
-### Step 4: Test Extension with Production (10 minutes)
+### ✅ Step 4: Test Extension with Production - COMPLETED
 - Load extension in Chrome (`chrome://extensions/`)
 - Test full flow:
   - Calendar → Extension → Generate Brief
@@ -71,14 +75,20 @@
   - Test delete functionality (click delete, confirm)
 - Verify all API calls work with production backend
 
-### Step 5: Create Extension ZIP (2 minutes)
+### Step 5: Create Extension Screenshots (20 minutes)
+- **Required:** 1 promotional tile (440x280px)
+- **Required:** 3-5 screenshots (1280x800px or 640x400px)
+- **Show:** Extension popup, Google Calendar integration, Brief viewer, All briefs page, Dashboard
+- Use Snipping Tool or screenshot tool
+
+### Step 6: Create Extension ZIP (2 minutes)
 - Navigate to `meeting-prep-landing/meetingprep-extension/` folder
 - Select ALL files in the folder
 - Right-click → Send to → Compressed (zipped) folder
 - Rename to: `meetingprep-ai-v1.0.0.zip`
 - Test ZIP loads correctly in Chrome (Load unpacked from ZIP location)
 
-### Step 6: Submit to Chrome Web Store (30 minutes)
+### Step 7: Submit to Chrome Web Store (30 minutes)
 1. Go to https://chrome.google.com/webstore/devconsole
 2. Pay $5 developer registration fee (one-time)
 3. Click "New Item" → Upload your ZIP file
@@ -110,9 +120,9 @@
 - [x] Privacy Policy: Must be publicly accessible URL ✅ (you have `/privacy` page)
 - [x] Single Purpose: Extension should have one clear purpose ✅
 - [x] Permissions Justification: All permissions justified ✅ (calendar access for meeting detection)
-- [ ] Production URLs: All localhost references updated to production
-- [ ] Environment Variables: Added in Vercel
-- [ ] Extension Tested: Full flow works with production backend
+- [x] Production URLs: All localhost references updated to production ✅
+- [x] Environment Variables: Added in Vercel (verify SUPABASE_SERVICE_ROLE_KEY)
+- [x] Extension Tested: Full flow works with production backend ✅
 
 ---
 
@@ -239,13 +249,14 @@ Chrome Extension (Frontend)
 - OpenAI GPT-4o-mini integration
 - Professional UI/UX
 
-### ✅ Phase 2: Production Ready (98% COMPLETE)
+### ✅ Phase 2: Production Ready (99% COMPLETE)
 - ✅ OpenAI integration + data persistence
 - ✅ Extension icons created
 - ✅ All briefs viewer page
 - ✅ Delete functionality
 - ✅ Enhanced dashboard
-- ⏳ Production URL updates (next step)
+- ✅ Production URL updates (completed)
+- ✅ Production deployment and testing (completed)
 - ⏳ Chrome Web Store submission (final step)
 
 ### 🔮 Phase 3: Growth Features (Future)
@@ -388,8 +399,9 @@ npm run dev
 
 ---
 
-**Status:** 🚀 98% COMPLETE - READY FOR PRODUCTION!
-**Last Updated:** December 2024
+**Status:** 🚀 99% COMPLETE - READY FOR CHROME WEB STORE SUBMISSION!
+**Last Updated:** December 2024 (Production URLs updated, extension tested with production backend)
+**Production URL:** https://meetingprep-ai-vercel.vercel.app
 
 ### 🎉 Recent Achievements:
 - ✅ **Extension Icons Created** - Custom purple gradient icons with "MP" text
@@ -398,9 +410,13 @@ npm run dev
 - ✅ **Enhanced Dashboard** - Real data integration with meeting details
 - ✅ **UI Improvements** - Fixed visibility issues, consolidated messaging
 - ✅ **Code Pushed to GitHub** - All changes backed up
+- ✅ **Production Deployment** - Deployed to Vercel (meetingprep-ai-vercel.vercel.app)
+- ✅ **Production URLs Updated** - All extension files now use production URL
+- ✅ **Subscription System Fixed** - Auto-create subscriptions, bypass limit for launch
+- ✅ **Production Testing** - Extension tested and working with production backend
 
-### 🚀 Launch Readiness: 98% Complete MVP
-**Complete AI SaaS product - Chrome extension generates professional AI briefs, saves to database, tracks usage for billing. Final step: Update to production URLs and submit to Chrome Web Store!**
+### 🚀 Launch Readiness: 99% Complete MVP
+**Complete AI SaaS product - Chrome extension generates professional AI briefs, saves to database, tracks usage for billing. Final steps: Create screenshots, create ZIP, and submit to Chrome Web Store!**
 
 **Next Milestone:** Chrome Web Store submission
 **Strategic Priority:** Deploy → Submit → Market → Iterate based on user feedback
