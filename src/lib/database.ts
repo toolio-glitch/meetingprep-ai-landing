@@ -7,6 +7,8 @@ import type {
   Brief, 
   BriefInsert, 
   UserSubscription,
+  UserSubscriptionInsert,
+  UserSubscriptionUpdate,
   MeetingData 
 } from './database.types'
 
@@ -272,15 +274,16 @@ export class SubscriptionService {
       try {
         // Use service role client to bypass RLS for admin operations
         const supabaseAdmin = getSupabaseServiceRoleClient()
+        const subscriptionInsert: UserSubscriptionInsert = {
+          user_id: userId,
+          plan: 'free',
+          briefs_limit: 20, // Increased for launch/testing
+          briefs_used_this_month: 0,
+          status: 'active'
+        }
         const { data, error } = await supabaseAdmin
           .from('user_subscriptions')
-          .insert({
-            user_id: userId,
-            plan: 'free',
-            briefs_limit: 20, // Increased for launch/testing
-            briefs_used_this_month: 0,
-            status: 'active'
-          })
+          .insert(subscriptionInsert as any)
           .select()
           .single()
         
@@ -311,9 +314,10 @@ export class SubscriptionService {
       // Update limit to 20 for existing free users
       try {
         const supabaseAdmin = getSupabaseServiceRoleClient()
-        await supabaseAdmin
-          .from('user_subscriptions')
-          .update({ briefs_limit: 20 })
+        const limitUpdate: UserSubscriptionUpdate = { briefs_limit: 20 }
+        await (supabaseAdmin
+          .from('user_subscriptions') as any)
+          .update(limitUpdate)
           .eq('user_id', userId)
         effectiveLimit = 20
         subscription.briefs_limit = 20
@@ -331,12 +335,13 @@ export class SubscriptionService {
     if (subscription.plan === 'free' && subscription.briefs_used_this_month >= effectiveLimit && effectiveLimit < 20) {
       try {
         const supabaseAdmin = getSupabaseServiceRoleClient()
-        await supabaseAdmin
-          .from('user_subscriptions')
-          .update({ 
-            briefs_limit: 20,
-            briefs_used_this_month: 0 
-          })
+        const updateData: UserSubscriptionUpdate = { 
+          briefs_limit: 20,
+          briefs_used_this_month: 0 
+        }
+        await (supabaseAdmin
+          .from('user_subscriptions') as any)
+          .update(updateData)
           .eq('user_id', userId)
         subscription.briefs_limit = 20
         subscription.briefs_used_this_month = 0
