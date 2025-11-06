@@ -41,6 +41,10 @@
 8. ⏳ **Create Extension ZIP**
 9. ⏳ **Submit to Chrome Web Store**
 
+**Post-Launch (Week 2-4):**
+10. ⏳ **Add Stripe Integration** (payment processing for paid plans)
+11. ⏳ **Gather User Feedback** (validate demand before monetizing)
+
 ---
 
 ## 🎯 Immediate Next Steps (Detailed Checklist)
@@ -220,16 +224,29 @@ Chrome Extension (Frontend)
 
 ## Pricing & Business Model
 
-### Freemium Strategy
-- **Free:** 5 briefs/month
+### Launch Strategy: Free First, Monetize Later ✅
+**Decision:** Launch with free tier only, add Stripe/payment processing after validating demand.
+
+**Current Launch Plan:**
+- **Free Tier:** 20 briefs/month (temporarily increased for launch)
+- **No Payment Processing:** Launch without Stripe integration
+- **Future Paid Tiers:** Add Stripe after 1-2 weeks of user feedback
+
+### Future Freemium Strategy (Post-Launch)
+- **Free:** 5 briefs/month (after launch validation)
 - **Pro (£19/month):** Unlimited briefs + LinkedIn research
 - **Pro+ (£39/month):** Email context integration + advanced AI
 - **Team (£49/month):** Shared briefs + CRM integration
 
-### Revenue Projections
-- **Month 3:** 200 users × £19 = £3,800 MRR
-- **Month 6:** 500 users × £19 = £9,500 MRR  
-- **Month 12:** 1,000 users × £19 = £19,000 MRR
+### Launch Phase (First 2-4 weeks)
+- **Goal:** Get users, gather feedback, validate demand
+- **Focus:** Free tier only, no monetization
+- **Success Metrics:** User signups, brief generation usage, user feedback
+
+### Future Revenue Projections (After Stripe Integration)
+- **Month 3:** 200 users × 10% conversion × £19 = £380 MRR
+- **Month 6:** 500 users × 10% conversion × £19 = £950 MRR  
+- **Month 12:** 1,000 users × 10% conversion × £19 = £1,900 MRR
 
 ### Cost Structure (100 active users)
 - **OpenAI API:** £20-50/month (~£0.02 per brief)
@@ -259,13 +276,20 @@ Chrome Extension (Frontend)
 - ✅ Production deployment and testing (completed)
 - ⏳ Chrome Web Store submission (final step)
 
-### 🔮 Phase 3: Growth Features (Future)
+### ⏳ Phase 3: Monetization (Post-Launch, Week 2-4)
+- Stripe integration for payment processing
+- Checkout pages and upgrade flow
+- Stripe webhooks for subscription management
+- Restore free tier limit to 5 briefs/month
+- Launch paid plans (Pro, Pro+, Team)
+
+### 🔮 Phase 4: Growth Features (Future)
 - LinkedIn profile research
 - Company news integration
 - Team collaboration features
 - CRM integrations (Salesforce, HubSpot)
 
-### 🚀 Phase 4: Scale (3-6 months)
+### 🚀 Phase 5: Scale (3-6 months)
 - Outlook Calendar support
 - Mobile app (React Native)
 - Enterprise features
@@ -400,7 +424,8 @@ npm run dev
 ---
 
 **Status:** 🚀 99% COMPLETE - READY FOR CHROME WEB STORE SUBMISSION!
-**Last Updated:** December 2024 (Production URLs updated, extension tested with production backend)
+**Launch Strategy:** FREE FIRST - Launch without Stripe, add monetization after validating demand
+**Last Updated:** December 2024 (Production URLs updated, extension tested with production backend, launch free first strategy)
 **Production URL:** https://meetingprep-ai-vercel.vercel.app
 
 ### 🎉 Recent Achievements:
@@ -416,7 +441,7 @@ npm run dev
 - ✅ **Production Testing** - Extension tested and working with production backend
 
 ### 🚀 Launch Readiness: 99% Complete MVP
-**Complete AI SaaS product - Chrome extension generates professional AI briefs, saves to database, tracks usage for billing. Final steps: Create screenshots, create ZIP, and submit to Chrome Web Store!**
+**Complete AI SaaS product - Chrome extension generates professional AI briefs, saves to database, tracks usage for billing. Launching FREE first to validate demand, then adding Stripe/payment processing after user feedback. Final steps: Create screenshots, create ZIP, and submit to Chrome Web Store!**
 
 **Next Milestone:** Chrome Web Store submission
 **Strategic Priority:** Deploy → Submit → Market → Iterate based on user feedback
