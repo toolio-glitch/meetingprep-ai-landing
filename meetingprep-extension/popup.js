@@ -6,13 +6,50 @@ class MeetingPrepPopup {
   constructor() {
     this.user = null;
     this.currentMeeting = null;
+    this.extensionId = null;
     this.init();
   }
 
   async init() {
+    await this.getOrCreateExtensionId();
     await this.checkAuthStatus();
     this.setupEventListeners();
     await this.loadCurrentMeeting();
+    
+    // Track popup opened
+    await this.trackEvent('popup_opened');
+  }
+
+  async getOrCreateExtensionId() {
+    // Get or create a unique ID for this extension installation
+    const result = await chrome.storage.local.get(['extensionId']);
+    
+    if (result.extensionId) {
+      this.extensionId = result.extensionId;
+    } else {
+      // Generate new UUID for this installation
+      this.extensionId = crypto.randomUUID();
+      await chrome.storage.local.set({ extensionId: this.extensionId });
+    }
+  }
+
+  async trackEvent(eventType, metadata = {}) {
+    try {
+      await fetch(`${API_BASE}/api/extension/analytics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          eventType,
+          userId: this.user?.id || null,
+          userEmail: this.user?.email || null,
+          extensionId: this.extensionId,
+          metadata
+        })
+      });
+    } catch (error) {
+      // Silently fail - don't break user experience
+      console.log('Analytics tracking failed:', error);
+    }
   }
 
   async checkAuthStatus() {
@@ -34,7 +71,10 @@ class MeetingPrepPopup {
   setupEventListeners() {
     // Auth listeners
     document.getElementById('login-btn').addEventListener('click', () => this.handleLogin());
-    document.getElementById('signup-link').addEventListener('click', () => this.openSignupPage());
+    document.getElementById('signup-link').addEventListener('click', () => {
+      this.trackEvent('signup_clicked');
+      this.openSignupPage();
+    });
     document.getElementById('logout-link').addEventListener('click', () => this.handleLogout());
     
     // Main functionality listeners
@@ -85,6 +125,10 @@ class MeetingPrepPopup {
         });
         
         this.user = data.user;
+        
+        // Track successful login
+        await this.trackEvent('login_success', { email: data.user.email });
+        
         this.showMainSection();
         this.showMessage('Successfully signed in!', 'success');
       } else {
@@ -230,6 +274,12 @@ class MeetingPrepPopup {
       const data = await response.json();
       
       if (response.ok && data.success && data.brief && data.brief.content) {
+        // Track successful brief generation
+        await this.trackEvent('brief_generated', { 
+          meetingTitle: this.currentMeeting.title,
+          attendeeCount: this.currentMeeting.attendees?.length || 0
+        });
+        
         this.displayBrief(data.brief.content);
         this.showMessage('Brief generated successfully!', 'success');
       } else {
