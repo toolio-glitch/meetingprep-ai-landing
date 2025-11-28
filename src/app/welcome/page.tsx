@@ -81,14 +81,14 @@ export default function WelcomePage() {
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  ⚡ Click MeetingPrep AI Icon
+                  ⚡ Click a Meeting, Then Click MeetingPrep AI
                 </h3>
                 <p className="text-gray-700 mb-3">
-                  Look for the MeetingPrep AI icon in your toolbar and click it to generate your first meeting brief!
+                  In Google Calendar, click on any upcoming meeting to view its details. Then click the MeetingPrep AI icon in your toolbar to generate an AI brief for that meeting!
                 </p>
                 <div className="bg-white p-3 rounded-lg border border-green-200">
                   <p className="text-sm text-gray-600">
-                    🎯 The extension will read your calendar and create an AI-powered brief in 30 seconds
+                    🎯 The extension reads the meeting details and creates your brief in 30 seconds
                   </p>
                 </div>
               </div>
