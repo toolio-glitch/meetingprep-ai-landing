@@ -34,9 +34,9 @@ class BackgroundService {
     if (details.reason === 'install') {
       console.log('MeetingPrep AI: Extension installed');
       
-      // Open welcome page
+      // Open welcome page with onboarding instructions
       chrome.tabs.create({
-        url: 'https://meetingprep-ai-vercel.vercel.app/signup?source=extension'
+        url: 'https://meetingprep-ai-vercel.vercel.app/welcome'
       });
       
       // Set default settings
