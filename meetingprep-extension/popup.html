@@ -153,6 +153,16 @@
       font-size: 14px;
     }
     
+    .info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 12px 0;
+      font-size: 14px;
+    }
+    
     .footer {
       text-align: center;
       font-size: 11px;
@@ -197,7 +207,7 @@
     </div>
     
     <!-- Authentication Section -->
-    <div id="auth-section" class="auth-section">
+    <div id="auth-section" class="auth-section" style="display: none;">
       <div class="content">
         <h3 style="margin-top: 0;">Welcome! 👋</h3>
         <p style="font-size: 13px; margin: 0 0 12px 0; opacity: 0.9;">
@@ -216,8 +226,8 @@
       </div>
     </div>
     
-    <!-- Main Section (when logged in) -->
-    <div id="main-section" style="display: none;">
+    <!-- Main Section -->
+    <div id="main-section">
       <div class="content">
         <div id="meeting-info">
           <h3 style="margin-top: 0;">Current Meeting</h3>
@@ -235,6 +245,8 @@
       
       <div class="footer">
         <span id="user-email"></span>
+        <a href="#" id="signin-footer-link" class="footer-button">Sign in</a>
+        <a href="#" id="signup-footer-link" class="footer-button">Sign up for free</a>
         <button id="view-all-briefs-link" class="footer-button">View All Briefs</button>
         <a href="#" id="logout-link">Sign Out</a>
       </div>

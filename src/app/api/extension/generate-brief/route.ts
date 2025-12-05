@@ -90,26 +90,25 @@ export async function POST(request: NextRequest) {
       return addCorsHeaders(response);
     }
 
-    // For demo mode, use a default user ID if not provided
-    const effectiveUserId = userId || '6adcbfcd-5cbc-4608-898b-53ecb07141b0';
+    const isAnonymous = !userId;
+    console.log('API received userId:', userId, '(Anonymous:', isAnonymous, ')');
     
-    console.log('API received userId:', userId);
-    console.log('Using effectiveUserId:', effectiveUserId);
-    
-    // Check if user can generate brief (subscription limits)
-    const { canGenerate, usage } = await SubscriptionService.canGenerateBrief(effectiveUserId);
-    
-    if (!canGenerate) {
-      const response = NextResponse.json({ 
-        success: false,
-        error: 'Brief limit exceeded. Please upgrade your plan.',
-        usage: {
-          briefs_used: usage.used,
-          briefs_limit: usage.limit,
-          plan: usage.plan
-        }
-      } as BriefGenerationResponse, { status: 403 });
-      return addCorsHeaders(response);
+    // For authenticated users, check subscription limits
+    if (!isAnonymous) {
+      const { canGenerate, usage } = await SubscriptionService.canGenerateBrief(userId);
+      
+      if (!canGenerate) {
+        const response = NextResponse.json({ 
+          success: false,
+          error: 'Brief limit exceeded. Please upgrade your plan.',
+          usage: {
+            briefs_used: usage.used,
+            briefs_limit: usage.limit,
+            plan: usage.plan
+          }
+        } as BriefGenerationResponse, { status: 403 });
+        return addCorsHeaders(response);
+      }
     }
 
     // Start timing for performance tracking
@@ -120,62 +119,81 @@ export async function POST(request: NextRequest) {
     
     const generationTime = Date.now() - startTime;
     
-    // Normalize meeting data for database (ensure attendees is always an array)
-    const normalizedMeeting: DatabaseMeetingData = {
-      ...meeting,
-      attendees: Array.isArray(meeting.attendees) ? meeting.attendees : [meeting.attendees],
-      date: convertToISODate(meeting.date), // Convert human-readable date to ISO format
-      time: convertToTimeFormat(meeting.time) // Convert time range to single time
-    };
-    
-    console.log('Normalized meeting data:', normalizedMeeting);
-    
-    // Save meeting and brief to database
+    // For authenticated users, save to database
+    // For anonymous users, just return the brief without saving
     let result;
-    try {
-      result = await MeetingPrepService.createMeetingWithBrief(
-        effectiveUserId,
-        normalizedMeeting,
-        briefContent,
-        generationTime
-      );
+    
+    if (!isAnonymous) {
+      // Normalize meeting data for database
+      const normalizedMeeting: DatabaseMeetingData = {
+        ...meeting,
+        attendees: Array.isArray(meeting.attendees) ? meeting.attendees : [meeting.attendees],
+        date: convertToISODate(meeting.date),
+        time: convertToTimeFormat(meeting.time)
+      };
       
-      if (!result) {
-        console.error('Database save returned null result');
-        const response = NextResponse.json({ 
-          success: false,
-          error: 'Failed to save brief to database' 
-        } as BriefGenerationResponse, { status: 500 });
-        return addCorsHeaders(response);
+      console.log('Saving to database for user:', userId);
+      
+      try {
+        result = await MeetingPrepService.createMeetingWithBrief(
+          userId,
+          normalizedMeeting,
+          briefContent,
+          generationTime
+        );
+        
+        if (!result) {
+          console.error('Database save returned null result');
+          // Don't fail the request - still return the brief
+          result = {
+            brief: { content: briefContent },
+            meeting: normalizedMeeting
+          };
+        } else {
+          console.log('Database save successful');
+        }
+      } catch (dbError) {
+        console.error('Database save error:', dbError);
+        // Don't fail the request - still return the brief
+        result = {
+          brief: { content: briefContent },
+          meeting: meeting
+        };
       }
-      
-      console.log('Database save successful:', result);
-    } catch (dbError) {
-      console.error('Database save error:', dbError);
-      const errorMessage = dbError instanceof Error ? dbError.message : 'Unknown database error';
-      const response = NextResponse.json({ 
-        success: false,
-        error: `Database error: ${errorMessage}` 
-      } as BriefGenerationResponse, { status: 500 });
-      return addCorsHeaders(response);
+    } else {
+      // Anonymous user - no database save
+      console.log('Anonymous user - skipping database save');
+      result = {
+        brief: { content: briefContent },
+        meeting: meeting
+      };
     }
 
-    // Get updated usage stats
-    const updatedUsage = await SubscriptionService.canGenerateBrief(effectiveUserId);
+    // Get updated usage stats for authenticated users only
+    let updatedUsage = null;
+    if (!isAnonymous) {
+      const usageCheck = await SubscriptionService.canGenerateBrief(userId);
+      updatedUsage = usageCheck.usage;
+    }
     
-    const response = NextResponse.json({ 
+    const responseData: BriefGenerationResponse = {
       success: true,
       brief: result.brief,
       meeting: result.meeting,
-      usage: {
-        briefs_used: updatedUsage.usage.used,
-        briefs_limit: updatedUsage.usage.limit,
-        plan: updatedUsage.usage.plan
-      },
       generated_at: new Date().toISOString(),
       generation_time_ms: generationTime
-    } as BriefGenerationResponse);
+    };
     
+    // Only include usage stats for authenticated users
+    if (updatedUsage) {
+      responseData.usage = {
+        briefs_used: updatedUsage.used,
+        briefs_limit: updatedUsage.limit,
+        plan: updatedUsage.plan
+      };
+    }
+    
+    const response = NextResponse.json(responseData);
     return addCorsHeaders(response);
 
   } catch (error) {

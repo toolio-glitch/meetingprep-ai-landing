@@ -7,17 +7,27 @@ class MeetingPrepPopup {
     this.user = null;
     this.currentMeeting = null;
     this.extensionId = null;
+    this.briefsGenerated = 0;
+    this.FREE_BRIEF_LIMIT = 10;
     this.init();
   }
 
   async init() {
     await this.getOrCreateExtensionId();
     await this.checkAuthStatus();
+    await this.initBriefCounter();
     this.setupEventListeners();
     await this.loadCurrentMeeting();
     
     // Track popup opened
     await this.trackEvent('popup_opened');
+  }
+
+  async initBriefCounter() {
+    // Get or initialize brief counter for free trial
+    const result = await chrome.storage.local.get(['briefsGenerated']);
+    this.briefsGenerated = result.briefsGenerated || 0;
+    this.updateUsageDisplay();
   }
 
   async getOrCreateExtensionId() {
@@ -58,13 +68,14 @@ class MeetingPrepPopup {
       
       if (result.authToken && result.user) {
         this.user = result.user;
-        this.showMainSection();
-      } else {
-        this.showAuthSection();
       }
+      
+      // Always show main section (no auth gate for v1.2.0)
+      this.showMainSection();
     } catch (error) {
       console.error('Auth check failed:', error);
-      this.showAuthSection();
+      // Still show main section even if auth check fails
+      this.showMainSection();
     }
   }
 
@@ -76,6 +87,25 @@ class MeetingPrepPopup {
       this.openSignupPage();
     });
     document.getElementById('logout-link').addEventListener('click', () => this.handleLogout());
+    
+    // Footer signup link
+    const signupFooterLink = document.getElementById('signup-footer-link');
+    if (signupFooterLink) {
+      signupFooterLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.trackEvent('signup_clicked', { source: 'footer' });
+        this.openSignupPage();
+      });
+    }
+    
+    // Footer signin link
+    const signinFooterLink = document.getElementById('signin-footer-link');
+    if (signinFooterLink) {
+      signinFooterLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.showAuthSection();
+      });
+    }
     
     // Main functionality listeners
     document.getElementById('generate-brief-btn').addEventListener('click', () => this.generateBrief());
@@ -159,13 +189,12 @@ class MeetingPrepPopup {
   }
 
   async loadCurrentMeeting() {
-    if (!this.user) return;
-
+    // Allow both authenticated and anonymous users to load meetings
     try {
       // Get current tab info
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       
-      if (!tab.url.includes('calendar.google.com')) {
+      if (!tab || !tab.url || !tab.url.includes('calendar.google.com')) {
         this.showMeetingMessage('Open a Google Calendar event to generate a brief');
         return;
       }
@@ -254,34 +283,63 @@ class MeetingPrepPopup {
       return;
     }
 
+    // Check if user has exceeded free limit and is not logged in
+    if (!this.user && this.briefsGenerated >= this.FREE_BRIEF_LIMIT) {
+      this.showUpgradePrompt();
+      return;
+    }
+
     try {
       this.showLoading('Generating AI brief...');
       
       const authData = await chrome.storage.local.get(['authToken', 'user']);
       
+      // For anonymous users, don't send userId - let backend use default demo user
+      // For logged-in users, send their actual user ID
+      const requestBody = {
+        meeting: this.currentMeeting
+      };
+      
+      if (authData.user?.id) {
+        requestBody.userId = authData.user.id;
+      }
+      // If anonymous, backend will use fallback user (line 94 in route.ts)
+      
       const response = await fetch(`${API_BASE}/api/extension/generate-brief`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authData.authToken}`
+          'Authorization': `Bearer ${authData.authToken || 'anonymous'}`
         },
-        body: JSON.stringify({
-          meeting: this.currentMeeting,
-          userId: authData.user?.id || 'f932d101-9801-4bf0-9584-fcb88dabede6'
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
       
       if (response.ok && data.success && data.brief && data.brief.content) {
+        // Increment brief counter for non-logged-in users
+        if (!this.user) {
+          this.briefsGenerated++;
+          await chrome.storage.local.set({ briefsGenerated: this.briefsGenerated });
+          this.updateUsageDisplay();
+        }
+        
         // Track successful brief generation
         await this.trackEvent('brief_generated', { 
           meetingTitle: this.currentMeeting.title,
-          attendeeCount: this.currentMeeting.attendees?.length || 0
+          attendeeCount: this.currentMeeting.attendees?.length || 0,
+          isAnonymous: !this.user
         });
         
         this.displayBrief(data.brief.content);
         this.showMessage('Brief generated successfully!', 'success');
+        
+        // Show upgrade hint after 8th brief
+        if (!this.user && this.briefsGenerated === 8) {
+          setTimeout(() => {
+            this.showMessage('💡 Only 2 free briefs left! Sign up to get 20/month', 'info');
+          }, 2000);
+        }
       } else {
         throw new Error(data.error || 'Failed to generate brief');
       }
@@ -384,9 +442,68 @@ class MeetingPrepPopup {
     document.getElementById('main-section').style.display = 'block';
     document.getElementById('loading-section').style.display = 'none';
     
+    // Update footer based on auth status
+    const userEmailEl = document.getElementById('user-email');
+    const signinLinkEl = document.getElementById('signin-footer-link');
+    const signupLinkEl = document.getElementById('signup-footer-link');
+    const logoutLinkEl = document.getElementById('logout-link');
+    
     if (this.user) {
-      document.getElementById('user-email').textContent = this.user.email;
+      userEmailEl.textContent = this.user.email;
+      userEmailEl.style.display = 'inline';
+      if (signinLinkEl) signinLinkEl.style.display = 'none';
+      if (signupLinkEl) signupLinkEl.style.display = 'none';
+      logoutLinkEl.style.display = 'inline';
+    } else {
+      userEmailEl.style.display = 'none';
+      if (signinLinkEl) signinLinkEl.style.display = 'inline';
+      if (signupLinkEl) signupLinkEl.style.display = 'inline';
+      logoutLinkEl.style.display = 'none';
     }
+  }
+
+  updateUsageDisplay() {
+    const userEmailEl = document.getElementById('user-email');
+    
+    if (!this.user) {
+      const remaining = this.FREE_BRIEF_LIMIT - this.briefsGenerated;
+      userEmailEl.textContent = `${remaining} free briefs left`;
+      userEmailEl.style.display = 'inline';
+      userEmailEl.style.opacity = '0.9';
+    }
+  }
+
+  showUpgradePrompt() {
+    // Hide other sections and show upgrade message
+    const mainContent = document.querySelector('#main-section .content');
+    
+    const upgradeHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <h3 style="margin-top: 0;">🎉 You've used all 10 free briefs!</h3>
+        <p style="font-size: 14px; margin: 16px 0;">
+          Sign up to get <strong>20 AI briefs per month</strong> for free, plus save all your briefs.
+        </p>
+        <button id="upgrade-signup-btn" class="generate-btn" style="margin-top: 12px;">
+          Create Free Account
+        </button>
+        <p style="font-size: 12px; opacity: 0.8; margin-top: 12px;">
+          Already have an account? 
+          <a href="#" id="upgrade-login-link" style="color: white; text-decoration: underline;">Sign in</a>
+        </p>
+      </div>
+    `;
+    
+    mainContent.innerHTML = upgradeHTML;
+    
+    // Add event listeners
+    document.getElementById('upgrade-signup-btn').addEventListener('click', () => {
+      this.openSignupPage();
+    });
+    
+    document.getElementById('upgrade-login-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.showAuthSection();
+    });
   }
 
   showLoading(message = 'Loading...') {
@@ -416,12 +533,13 @@ class MeetingPrepPopup {
     
     container.appendChild(messageEl);
     
-    // Auto-remove after 3 seconds
+    // Auto-remove after 5 seconds (longer for info messages)
+    const timeout = type === 'info' ? 5000 : 3000;
     setTimeout(() => {
       if (messageEl.parentNode) {
         messageEl.parentNode.removeChild(messageEl);
       }
-    }, 3000);
+    }, timeout);
   }
 }
 
