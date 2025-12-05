@@ -170,13 +170,16 @@ export interface MeetingData {
 // API response types
 export interface BriefGenerationResponse {
   success: boolean
-  brief?: Brief
+  brief?: Brief | { content: string }
+  meeting?: MeetingData | any
   error?: string
   usage?: {
     briefs_used: number
     briefs_limit: number
     plan: string
   }
+  generated_at?: string
+  generation_time_ms?: number
 }
 
 export interface MeetingWithBrief extends Meeting {
