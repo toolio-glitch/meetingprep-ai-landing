@@ -1,275 +1,231 @@
-# MeetingPrep AI - Marketing & Product Strategy
+# MeetingPrep AI - Master Strategy & Blueprint
 
-## 🎯 Current Status (Updated Nov 27, 2025)
+**Single source of truth for product status, strategy, and technical reference.**
+
+---
+
+## Current Status (Updated Feb 10, 2026)
 
 ### Key Metrics:
-- **Total Installs:** 23 (up from 11 on Nov 21)
-- **Real Active Users:** 1 (lhaovogo@gmail.com - generated 1 brief on Nov 17)
-- **Signup Conversion:** 22% (5 signups / 23 installs)
-- **Extension Versions:**
-  - **Live:** v1.1.0 (with analytics tracking)
-  - **In Review:** v1.1.1 (welcome page on install) - Submitted Nov 27
-  - **Planned:** v1.2.0 (10 free briefs without signup) - Build after v1.1.1 launches
+- **Total Installs:** 144 (Aug 2025 - Feb 23, 2026)
+- **Daily Install Rate:** ~1.3 installs/day organic
+- **Total Sign-Ups:** 2 real users (lhaovogo@gmail.com, webdevwarsaw@gmail.com)
+- **Sign-Up Conversion:** 1.4% (2/144) -- critically low
+- **Uninstalls:** 7 (94% retention rate)
+- **API Costs:** ~$0.01/month (negligible)
+- **Revenue:** $0
 
-### 🚨 CRITICAL INSIGHT DISCOVERED:
-**Signup is the main barrier - 78% of installers never even open the extension!**
-- 23 Chrome installs
-- Only 5 people signed up (22%)
-- 18 people (78%) installed but NEVER opened popup
-- Root cause: Signup friction before seeing value
+### Geography & Platform:
+- **92% United States**
+- **88% ChromeOS** (education/enterprise segment)
+- **13% Windows**
 
-### Analytics (Operational as of Nov 23):
-- **Tracks:** popup_opened, signup_clicked, login_success, brief_generated
-- **View data:** Run `node view-analytics.js`
-- **Key finding:** Only 1 user (test account) has opened popup since v1.1.0 launched
-- **Conclusion:** 78% of users install but never open extension = onboarding problem
+### Critical Problems:
+1. **1.4% install-to-signup conversion** -- 142 out of 144 installers never signed up
+2. **Supabase was paused** for weeks (free tier auto-pause), meaning the backend was down and any user who tried the extension got errors
+3. **Analytics table was never created** in Supabase -- all usage tracking has been silent-failing since launch
+4. **Both real users last active in November 2025** -- zero retention
 
-### Active Marketing:
-1. **LinkedIn Sales Playbook!** (67K members)
-   - Post submitted Nov 27 - pending admin approval
-   - Expected: 10-15 installs when approved
-2. **Reddit r/chrome_extensions** (33K members)
-   - Post live Nov 23 - drove 2 installs in first 2 hours
-   - Spirited-Tower3314 collaboration opportunity (complementary tools)
-3. **User Outreach:**
-   - lhaovogo@gmail.com emailed Nov 21 (only real active user)
-
-### Goals (Nov 27 - Dec 7):
-- ✅ v1.1.1 submitted (welcome page) - awaiting approval
-- ⏳ LinkedIn post approval → 10-15 new installs
-- ⏳ Measure v1.1.1 impact on signup conversion
-- 🎯 Build v1.2.0 (10 free briefs, no signup) - deploy Dec 5
-- 🎯 Target: 40-50 installs by Dec 7
+### Recent Changes (v1.3.0 - Live Jan 30, 2026):
+- Prominent "No Meeting Selected" warning state
+- One-click "Open Google Calendar" button
+- Impact unknown due to analytics being broken
 
 ---
 
-## 🚀 Product Roadmap
+## Version History
 
-### v1.1.1 - Welcome Page (Submitted Nov 27)
-**Status:** In Chrome review (expect approval in 1-2 days)
-
-**What it does:**
-- Opens welcome page automatically on install
-- Shows 3-step onboarding: Pin extension → Open Calendar → Click meeting → Generate brief
-- Clear instructions to reduce "never opened popup" problem
-
-**Expected impact:**
-- Current: 22% of installers open popup
-- Target: 40-50% of installers open popup
+- **v1.0.0:** Initial launch (Nov 2025)
+- **v1.1.0:** Analytics tracking added (Nov 23, 2025) -- table never created in DB
+- **v1.2.0:** Try before signup - 10 free briefs without auth (Dec 5, 2025)
+- **v1.3.0:** Prominent no-meeting warning + one-click Calendar button (Jan 30, 2026)
 
 ---
 
-### v1.2.0 - Try Before Signup (Build after v1.1.1 launches)
-**Status:** Planned for Dec 2-5
+## Install Trend (from Chrome Web Store CSV)
 
-**🎯 Core Strategy: Remove Signup Barrier**
+| Month | Installs | Avg/Day |
+|-------|----------|---------|
+| Nov 2025 (from 10th) | 29 | 1.4 |
+| Dec 2025 | 46 | 1.5 |
+| Jan 2026 | 37 | 1.2 |
+| Feb 2026 (to 23rd) | 32 | 1.4 |
 
-**Current Problem:**
-```
-23 installs → 5 signups (22%) → 1 active user (4% total activation)
-Barrier: Users must sign up BEFORE seeing any value
-```
-
-**v1.2.0 Solution:**
-```
-Install → Open popup → Generate 10 briefs WITHOUT signup ✅
-After 10th brief → "Sign up to get 20 more/month"
-Expected: 60-80% signup rate (users already see value)
-```
-
-**Implementation:**
-- Store usage count in browser local storage (no backend needed)
-- Generate briefs anonymously using extension ID as identifier
-- After 10 briefs used: Show signup prompt with Google Sign-In
-- After signup: Migrate their usage history to account
-
-**Why 10 free briefs:**
-- Industry data: 10-15 free uses = 25-30% conversion (optimal)
-- Covers 2-3 weeks of testing (habit formation period)
-- 50% of paid tier (20/month) - standard freemium ratio
-- Proven by: Loom (25 videos), Calendly (similar model)
-
-**Development timeline:**
-- Dec 2-3: Build local storage system + anonymous brief generation
-- Dec 4: Test thoroughly
-- Dec 5: Submit v1.2.0 to Chrome Store
-- Dec 7: Expected approval
-
-**Expected impact:**
-- Current activation: 4% (1/23)
-- With v1.2.0: 30-40% activation (12-16 active users out of 40 installs)
+Notable: Feb 23 had a spike of 9 installs (biggest single day).
 
 ---
 
-## 📊 SEO Strategy (Do After 50+ Installs)
-1. Blog posts: "How to Prep for Sales Calls", "AI Meeting Tools"
-2. Schema.org SoftwareApplication markup
-3. Submit to: AlternativeTo.net, Capterra, Product Hunt
-4. Optimize title tags and meta descriptions
+## What's Working
 
-**Note:** SEO takes 3-6 months. Focus on LinkedIn/Reddit first.
+- **Organic growth:** Consistent ~1.3 installs/day with zero marketing spend
+- **Chrome Store SEO:** People are finding and installing it
+- **Retention:** 94% keep it installed (only 7 uninstalls)
+- **US market fit:** 92% from United States
+- **Economics:** Negligible API costs, high margin potential
 
----
+## What's Broken
 
-## 📧 Outreach Templates & Guidelines
-
-### LinkedIn Post for Sales Playbook! (SUBMITTED - Pending Approval)
-```
-I'm a family doctor who built a meeting prep tool. Not sure if salespeople need it, but figured I'd ask.
-
-The story: I got tired of spending 30 min before every meeting researching attendees and writing notes. So I built a Chrome extension that does it automatically using AI.
-
-You connect it to Google Calendar, it pulls meeting details, generates a brief in 30 seconds. That's it.
-
-I use it for my consultant/pharma meetings, but I'm thinking sales teams who do 5-10+ calls a day might get more value from it than I do.
-
-It's free - Chrome Web Store, search "MeetingPrep AI"
-
-Honest question for this group: is meeting prep actually a pain point for you, or have you already solved this a different way?
-```
+- **Activation:** Almost nobody converts from install to actual usage
+- **Backend reliability:** Supabase free tier pauses after inactivity, silently breaking the product
+- **Analytics:** Never had working usage tracking -- flying blind
+- **No retry/error handling:** Users who hit a down backend just see errors and leave
 
 ---
 
-## 📝 LinkedIn Sales Contacts (For Future Outreach)
+## Immediate Actions (Feb 2026)
 
-### Priority Contacts Added
-- Pierce Griswold — SDR at Gong (San Francisco Bay Area)
-- Zara S. — SDR at Fastmarkets (London)
-- Albert van Rooyen — Digital Lead Manager at JifJaff MyBotGP (London)
-- Ayo Olamousi — SDR at LEAP Legal Software UK (London)
-- Dayo Ojo — Global SDR at Bandwidth (London)
-- Alexander Belding — Managing SDR at circle.cloud (Chelmsford)
-- Ciarán W. — SDR at Doctify (London)
-- Samuel Lloyd — SDR at Convera (London)
-- Mirad Sterkaj — Sales and Support Rep at Persyst (London)
-- Thomas (Bret) Lewis — Business Development Manager at Office Pride (Cape Coral)
-- Zulekha Zaman — SDR EMEA at Achievers (London)
-- Sarah Maxwell — Sales Executive at Lumon (UK)
-- Jordan Carvalho — SDR at Flourish (London)
+### 1. Create Analytics Table (MANUAL)
+Run `create-analytics-table.sql` in Supabase SQL Editor. This enables all the tracking code that's already in the extension.
 
-### LinkedIn DM Guidelines
-- Reference recent achievement from their profile
-- Keep to 2 sentences, conversational tone
-- Spell out numbers (avoid symbols)
-- No em dashes
-- Share Chrome Store link only after they accept connection
+### 2. Keep-Alive (DONE)
+- `/api/health` endpoint created
+- Vercel cron pings it every 12 hours
+- Deploy to Vercel to activate
 
-## Monetization Targets
-- Hit 100 total installs (baseline traction) with at least 30 weekly active users generating briefs.
-  - **PROGRESS: 17 installs as of Nov 23 (17% toward goal)**
-  - **REALITY CHECK: Only 1 real active user (lhaovogo@gmail.com) has generated briefs**
-  - **CONVERSION ISSUE: 29% signup rate (5/17), 20% activation rate (1/5)**
-  - **MILESTONE: First installs Nov 10, biggest spike Nov 17 (3 installs from r/SideProject)**
-- Collect 10 qualitative feedback notes or testimonials from active users.
-  - **PROGRESS: 0/10 - Emailed lhaovogo@gmail.com Nov 21, waiting for response**
-- Secure 5 warm leads who explicitly ask about premium features or higher limits.
-  - **PROGRESS: 1/5 (lawszs from r/ProductManagement showed interest)**
-- Maintain a 4.5+ Chrome Web Store rating once reviews start coming in.
-  - **PROGRESS: No reviews yet (need 5+ active users first)**
-- Once the above are met, move into Stripe integration and paid tier rollout.
-  - **CURRENT FOCUS: Fix 70% signup drop-off before adding monetization**
+### 3. Retry Logic & Error Handling (DONE)
+- All API calls now retry up to 2 times with backoff
+- 15-second timeout per request
+- User-friendly error messages for offline/timeout/server-down
 
----
-
-## 📈 What's Working (Validated Channels)
-
-### Reddit (Proven - 6 installs from 2 posts)
-- **r/SideProject** (Nov 15) → 3 installs on Nov 17
-- **r/chrome_extensions** (Nov 23) → 2 installs within 2 hours
-- **Best practice:** Technical, authentic posts. Lead with learning/building story.
-- **Spirited-Tower3314 collaboration:** Potential cross-promotion (their tool = focus during, ours = prep before)
-
-### LinkedIn (Testing - Pending)
-- **Sales Playbook!** post submitted Nov 27 (67K members)
-- Awaiting admin approval
-- Expected: 10-15 installs when live
-
-### Email Outreach (Limited data)
-- lhaovogo@gmail.com contacted Nov 21
-- Only real active user (1 brief generated Nov 17)
-- Awaiting response
-
----
-
-## 🎯 Next Actions (Priority Order)
-
-### This Week (Nov 27-30):
-1. ⏳ **Wait for LinkedIn post approval** - Check daily
-2. ⏳ **Wait for v1.1.1 Chrome approval** - Expected by Nov 29
-3. 📊 **Monitor analytics** - Run `node view-analytics.js` to see if v1.1.1 welcome page helps
-4. 📧 **Follow up with lhaovogo@gmail.com** if no response by Nov 29
-
-### Next Week (Dec 2-7):
-5. **Measure v1.1.1 impact:**
-   - How many new users opened popup?
-   - Did welcome page improve signup rate?
-   - LinkedIn post conversion rate?
-6. **Build v1.2.0** (10 free briefs, no signup):
-   - Dec 2-3: Development
-   - Dec 4: Testing
-   - Dec 5: Submit to Chrome Store
-7. **Target:** 40-50 total installs by Dec 7
-
----
-
-## 📊 User Data (As of Nov 27)
-
-### Chrome Web Store:
-- **23 installs total**
-- **1 uninstall** (96% retention)
-- **22 active installs**
-
-### Supabase Database:
-- **5 signups** (22% of installs)
-- **1 real user:** lhaovogo@gmail.com (generated 1 brief Nov 17)
-- **4 test accounts:** Your testing
-
-### The Gap:
-- **18 people** (78%) installed but NEVER opened popup
-- **Root cause:** No onboarding + signup required before seeing value
-- **Solution:** v1.1.1 (welcome page) + v1.2.0 (try before signup)
-
----
-
----
-
-## 💬 Active Opportunities
-
-### Potential Partnerships:
-- **Spirited-Tower3314** (r/chrome_extensions): Building focus-during-meetings tool
-  - Complementary products (prep before + focus during)
-  - Awaiting their beta link to test and provide feedback
-  - Potential: Cross-promotion in Chrome Store listings
-
-### LinkedIn Contacts:
-- **Albert van Rooyen** (JifJaff MyBotGP): Sent Chrome Store link via LinkedIn + email
-  - Email: Albertv@jifjaff.co.uk
-  - Status: Awaiting response
-  - Next: Schedule call if positive response
-
----
-
-## 🔧 Technical Resources
-
-**View Analytics:**
+### 4. Monitor Analytics (After table creation)
 ```bash
 cd C:\meeting-prep-AI\meeting-prep-landing
 node view-analytics.js
 ```
+Events tracked: `popup_opened`, `signup_clicked`, `login_success`, `brief_generated`, `open_calendar_clicked`, `watch_demo_clicked`
 
-**Get User Emails:**
-```bash
-cd C:\meeting-prep-AI\meeting-prep-landing
-node get-user-emails.js
+### 5. Decision Point (After 2 weeks of analytics data)
+- If activation still <5%: Rethink the product UX fundamentally
+- If activation reaches 20%+: Push marketing (Reddit, Product Hunt)
+
+---
+
+## Marketing (On Hold Until Activation Fixed)
+
+### Validated Channels:
+- **Chrome Store SEO:** 1.3 installs/day organic (working)
+- **Reddit:** r/SideProject, r/chrome_extensions (5 installs historically)
+- **Product Hunt:** Assets prepared, waiting for >30% activation
+
+### Target Users:
+Sales professionals, account executives, consultants, recruiters
+
+---
+
+## Monetization (POSTPONED)
+
+**Status:** No Stripe -- need 100+ active users first
+
+**Current:** Free (10 briefs no signup, 20/month after signup)
+
+**Future Pricing:**
+- Free: 5 briefs/month
+- Pro ($19/mo): Unlimited + LinkedIn
+- Pro+ ($39/mo): Email context + advanced AI
+- Team ($49/mo): Shared briefs + CRM
+
+---
+
+## Technical Reference
+
+### Production:
+- **Website:** https://meetingprep-ai-vercel.vercel.app
+- **Chrome Store:** https://chromewebstore.google.com/detail/meetingprep-ai/hpbljjdfjeimheogmjcklnohlmpgjlcj
+- **GitHub:** toolio-glitch/meetingprep-ai-landing
+- **Current Version:** v1.3.0 (live)
+
+### Stack:
+- Next.js 15.5.3 + Tailwind CSS v4
+- Supabase (PostgreSQL + Auth) -- FREE tier
+- OpenAI GPT-4o-mini
+- Chrome Extension Manifest v3
+- Deployed on Vercel (free tier)
+
+### Architecture:
+```
+Chrome Extension → Next.js API (Vercel) → Supabase DB
+                        ↓
+                  OpenAI GPT-4o-mini
 ```
 
-**Chrome Web Store:**
-- ID: hpbljjdfjeimheogmjcklnohlmpgjlcj
-- Dashboard: https://chrome.google.com/webstore/devconsole
+### Database Tables:
+- `meetings` -- calendar meeting data
+- `briefs` -- AI-generated briefs
+- `user_subscriptions` -- usage tracking & billing
+- `extension_analytics` -- usage event tracking (NEEDS CREATION)
 
-**Key Files:**
-- Extension: `meetingprep-extension/`
-- Latest version: `meetingprep-ai-v1.1.1-welcome.zip`
-- Analytics table SQL: `create-analytics-table.sql`
-- Email template: `email-to-existing-users.md`
+### API Endpoints:
+- `POST /api/auth/login` -- user authentication
+- `POST /api/extension/generate-brief` -- AI brief generation
+- `GET /api/extension/get-meetings` -- fetch user meetings
+- `DELETE /api/extension/delete-meeting` -- delete meeting
+- `POST /api/extension/analytics` -- log usage events
+- `GET /api/health` -- health check (keep-alive target)
 
+### Environment Variables (Vercel):
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPENAI_API_KEY`
+
+### Analytics:
+```bash
+node view-analytics.js
+```
+
+### Project Structure:
+```
+meeting-prep-AI/
+├── meeting-prep-landing/
+│   ├── src/app/              # Next.js App Router
+│   │   ├── api/              # Backend API routes
+│   │   ├── dashboard/        # Web dashboard
+│   │   ├── login/signup/     # Auth pages
+│   │   └── page.tsx          # Landing page
+│   ├── src/lib/              # Supabase clients & services
+│   ├── meetingprep-extension/ # Chrome extension
+│   │   ├── popup.html/js     # Extension UI
+│   │   ├── content-script.js # Calendar integration
+│   │   ├── background.js     # Service worker
+│   │   ├── brief-viewer.*    # Full brief display
+│   │   └── all-briefs.*      # All briefs viewer
+│   ├── vercel.json           # Cron config (keep-alive)
+│   ├── create-analytics-table.sql
+│   ├── supabase-schema.sql
+│   └── view-analytics.js
+└── strategy.md               # This file
+```
+
+---
+
+## Roadmap
+
+**Phase 1: Fix Activation (Now - Mar 2026)**
+- Get analytics working
+- Prevent Supabase from pausing
+- Understand why 98.6% of installers never sign up
+- Fix the biggest drop-off point
+
+**Phase 2: Scale Traffic (Mar-Apr 2026)**
+- Product Hunt launch when activation >20%
+- Target: 200-400 active users
+
+**Phase 3: Monetization (Apr-May 2026)**
+- Stripe integration after 100+ active users
+
+**Phase 4: Premium Features (May-Aug 2026)**
+- LinkedIn integration
+- Email context (Gmail/Outlook)
+- Team collaboration
+
+**Phase 5: Enterprise (Aug-Dec 2026)**
+- Outlook Calendar support
+- Mobile app
+- White-label solutions
+
+---
+
+*Updated: February 10, 2026*
+*Next Review: After 2 weeks of analytics data*
+
+**Current Focus:** Fix analytics, prevent Supabase downtime, understand activation gap.

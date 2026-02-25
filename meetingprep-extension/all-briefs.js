@@ -9,6 +9,25 @@ class AllBriefsViewer {
     this.init();
   }
 
+  async fetchWithRetry(url, options = {}, maxRetries = 2) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeout);
+        return response;
+      } catch (error) {
+        if (attempt === maxRetries) {
+          if (error.name === 'AbortError') throw new Error('Request timed out.');
+          if (!navigator.onLine) throw new Error('You appear to be offline.');
+          throw new Error('Unable to reach the server. Please try again shortly.');
+        }
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
+  }
+
   async init() {
     try {
       // Check if user is authenticated
@@ -38,7 +57,7 @@ class AllBriefsViewer {
 
       // Fetch meetings from API
       const authToken = await this.getAuthToken();
-      const response = await fetch(`${API_BASE}/api/extension/get-meetings?userId=${encodeURIComponent(this.user.id)}`, {
+      const response = await this.fetchWithRetry(`${API_BASE}/api/extension/get-meetings?userId=${encodeURIComponent(this.user.id)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -240,7 +259,7 @@ class AllBriefsViewer {
     try {
       const authToken = await this.getAuthToken();
       
-      const response = await fetch(`${API_BASE}/api/extension/delete-meeting?meetingId=${encodeURIComponent(meetingId)}&userId=${encodeURIComponent(this.user.id)}`, {
+      const response = await this.fetchWithRetry(`${API_BASE}/api/extension/delete-meeting?meetingId=${encodeURIComponent(meetingId)}&userId=${encodeURIComponent(this.user.id)}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

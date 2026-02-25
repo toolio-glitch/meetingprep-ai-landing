@@ -12,6 +12,30 @@ class MeetingPrepPopup {
     this.init();
   }
 
+  async fetchWithRetry(url, options = {}, maxRetries = 2) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(timeout);
+        return response;
+      } catch (error) {
+        const isLastAttempt = attempt === maxRetries;
+        if (isLastAttempt) {
+          if (error.name === 'AbortError') {
+            throw new Error('Request timed out. The server may be temporarily unavailable.');
+          }
+          if (!navigator.onLine) {
+            throw new Error('You appear to be offline. Please check your internet connection.');
+          }
+          throw new Error('Unable to reach the server. It may be temporarily down — please try again in a minute.');
+        }
+        await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
+  }
+
   async init() {
     await this.getOrCreateExtensionId();
     await this.checkAuthStatus();
@@ -45,7 +69,7 @@ class MeetingPrepPopup {
 
   async trackEvent(eventType, metadata = {}) {
     try {
-      await fetch(`${API_BASE}/api/extension/analytics`, {
+      await this.fetchWithRetry(`${API_BASE}/api/extension/analytics`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -55,9 +79,8 @@ class MeetingPrepPopup {
           extensionId: this.extensionId,
           metadata
         })
-      });
+      }, 1);
     } catch (error) {
-      // Silently fail - don't break user experience
       console.log('Analytics tracking failed:', error);
     }
   }
@@ -87,6 +110,20 @@ class MeetingPrepPopup {
       this.openSignupPage();
     });
     document.getElementById('logout-link').addEventListener('click', () => this.handleLogout());
+    
+    // Open Calendar button
+    document.getElementById('open-calendar-btn').addEventListener('click', () => {
+      this.trackEvent('open_calendar_clicked');
+      chrome.tabs.create({ url: 'https://calendar.google.com' });
+    });
+    
+    // Watch demo link
+    document.getElementById('watch-demo-link').addEventListener('click', (e) => {
+      e.preventDefault();
+      this.trackEvent('watch_demo_clicked');
+      // TODO: Open demo video/GIF modal
+      this.showMessage('Demo video coming soon!', 'info');
+    });
     
     // Footer signup link
     const signupFooterLink = document.getElementById('signup-footer-link');
@@ -132,7 +169,7 @@ class MeetingPrepPopup {
     try {
       this.showLoading('Signing in...');
       
-      const response = await fetch(`${API_BASE}/api/auth/login`, {
+      const response = await this.fetchWithRetry(`${API_BASE}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +257,7 @@ class MeetingPrepPopup {
           console.log('Real meeting data received:', response.meeting);
           this.currentMeeting = response.meeting;
           this.displayMeetingInfo(this.currentMeeting);
-          document.getElementById('generate-brief-btn').disabled = false;
+          this.showMeetingDetectedState();
         } else {
           console.log('No meeting data received, using test data');
           this.createTestMeeting();
@@ -231,8 +268,18 @@ class MeetingPrepPopup {
       }
     } catch (error) {
       console.error('Error loading meeting:', error);
-      this.showMeetingMessage('Unable to detect meeting. Make sure you\'re on Google Calendar.');
+      this.showNoMeetingState();
     }
+  }
+
+  showNoMeetingState() {
+    document.getElementById('no-meeting-state').style.display = 'block';
+    document.getElementById('meeting-detected-state').style.display = 'none';
+  }
+
+  showMeetingDetectedState() {
+    document.getElementById('no-meeting-state').style.display = 'none';
+    document.getElementById('meeting-detected-state').style.display = 'block';
   }
 
   createTestMeeting() {
@@ -246,7 +293,7 @@ class MeetingPrepPopup {
     };
     
     this.displayMeetingInfo(this.currentMeeting);
-    document.getElementById('generate-brief-btn').disabled = false;
+    this.showMeetingDetectedState();
     console.log('Test meeting created and button enabled');
   }
 
@@ -305,7 +352,7 @@ class MeetingPrepPopup {
       }
       // If anonymous, backend will use fallback user (line 94 in route.ts)
       
-      const response = await fetch(`${API_BASE}/api/extension/generate-brief`, {
+      const response = await this.fetchWithRetry(`${API_BASE}/api/extension/generate-brief`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -354,8 +401,9 @@ class MeetingPrepPopup {
   displayBrief(brief) {
     const briefEl = document.getElementById('brief-content');
     
-    // Show full content in scrollable popup
-    briefEl.innerHTML = brief.replace(/\n/g, '<br>');
+    // Convert markdown to HTML
+    const briefHtml = this.convertBriefToHtml(brief);
+    briefEl.innerHTML = briefHtml;
     briefEl.style.display = 'block';
     
     // Store the full brief data for the viewer
@@ -373,6 +421,34 @@ class MeetingPrepPopup {
     
     // Add "View Full Brief" button if not already present
     this.addViewFullBriefButton();
+  }
+
+  convertBriefToHtml(brief) {
+    if (!brief) return '<p>No brief content available</p>';
+    
+    // Convert markdown-like formatting to HTML
+    let html = brief
+      // Headers
+      .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+      
+      // Bold text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      
+      // Lists
+      .replace(/^- (.*$)/gm, '<li>$1</li>')
+      
+      // Line breaks
+      .replace(/\n/g, '<br>');
+    
+    // Group consecutive list items in <ul>
+    html = html.replace(/(<li>.*?<\/li>(<br>)*)+/gs, (match) => {
+      const items = match.replace(/<br>/g, '');
+      return `<ul>${items}</ul>`;
+    });
+    
+    return html;
   }
 
   addViewFullBriefButton() {
@@ -517,11 +593,8 @@ class MeetingPrepPopup {
 
   hideLoading() {
     document.getElementById('loading-section').style.display = 'none';
-    if (this.user) {
-      this.showMainSection();
-    } else {
-      this.showAuthSection();
-    }
+    // Always show main section after loading (don't redirect to auth)
+    this.showMainSection();
   }
 
   showMessage(message, type = 'info') {
