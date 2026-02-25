@@ -75,7 +75,7 @@ class AllBriefsViewer {
       const data = await response.json();
       
       if (data.success && data.meetings && data.meetings.length > 0) {
-        this.meetings = data.meetings;
+        this.meetings = this.deduplicateMeetings(data.meetings);
         this.displayBriefs();
       } else {
         this.showEmptyState();
@@ -108,11 +108,22 @@ class AllBriefsViewer {
     }
     
     if (briefs.length > 0) {
-      this.meetings = briefs;
+      this.meetings = this.deduplicateMeetings(briefs);
       this.displayBriefs();
     } else {
       this.showEmptyState();
     }
+  }
+
+  deduplicateMeetings(meetings) {
+    const seen = new Map();
+    return meetings.filter(item => {
+      const m = item.meeting || item;
+      const key = `${(m.title || '').toLowerCase().trim()}|${m.date || ''}`;
+      if (seen.has(key)) return false;
+      seen.set(key, true);
+      return true;
+    });
   }
 
   async getAuthToken() {

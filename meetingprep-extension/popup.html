@@ -228,15 +228,33 @@
     
     <!-- Main Section -->
     <div id="main-section">
-      <div class="content">
+      <!-- No Meeting State (shown by default) -->
+      <div id="no-meeting-state" class="content" style="text-align: center;">
+        <div style="font-size: 48px; margin-bottom: 12px;">⚠️</div>
+        <h3 style="margin: 0 0 12px 0; font-size: 18px;">No Meeting Selected</h3>
+        <p style="font-size: 13px; opacity: 0.9; margin: 0 0 16px 0;">
+          To generate an AI brief, you need to:
+        </p>
+        <ol style="text-align: left; font-size: 13px; line-height: 1.8; padding-left: 20px; margin: 0 0 16px 0;">
+          <li>Go to <strong>Google Calendar</strong></li>
+          <li>Click on any <strong>upcoming meeting</strong></li>
+          <li>Come back and click <strong>"Generate Brief"</strong></li>
+        </ol>
+        <button id="open-calendar-btn" style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: white; color: #667eea; font-weight: bold; cursor: pointer; transition: all 0.2s;">
+          📅 Open Google Calendar
+        </button>
+      </div>
+      
+      <!-- Meeting Detected State (hidden by default) -->
+      <div id="meeting-detected-state" class="content" style="display: none;">
         <div id="meeting-info">
           <h3 style="margin-top: 0;">Current Meeting</h3>
           <div id="meeting-details">
-            <p>Open a Google Calendar event to generate a brief</p>
+            <p>Loading meeting details...</p>
           </div>
         </div>
         
-        <button id="generate-brief-btn" class="generate-btn" disabled>
+        <button id="generate-brief-btn" class="generate-btn">
           Generate Meeting Brief
         </button>
         

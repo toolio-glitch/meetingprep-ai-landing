@@ -117,14 +117,6 @@ class MeetingPrepPopup {
       chrome.tabs.create({ url: 'https://calendar.google.com' });
     });
     
-    // Watch demo link
-    document.getElementById('watch-demo-link').addEventListener('click', (e) => {
-      e.preventDefault();
-      this.trackEvent('watch_demo_clicked');
-      // TODO: Open demo video/GIF modal
-      this.showMessage('Demo video coming soon!', 'info');
-    });
-    
     // Footer signup link
     const signupFooterLink = document.getElementById('signup-footer-link');
     if (signupFooterLink) {
@@ -250,21 +242,21 @@ class MeetingPrepPopup {
       // Wait a bit for content script to initialize
       await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Try to get real meeting data from content script
       try {
         const response = await chrome.tabs.sendMessage(tab.id, { action: 'getMeetingData' });
-        if (response && response.meeting) {
+        if (response && response.meeting && response.meeting.title) {
           console.log('Real meeting data received:', response.meeting);
           this.currentMeeting = response.meeting;
+          this.currentMeeting.attendees = this.filterAttendees(this.currentMeeting.attendees || []);
           this.displayMeetingInfo(this.currentMeeting);
           this.showMeetingDetectedState();
         } else {
-          console.log('No meeting data received, using test data');
-          this.createTestMeeting();
+          console.log('No meeting data received');
+          this.showNoMeetingState();
         }
       } catch (error) {
-        console.log('Failed to get real meeting data, using test data:', error);
-        this.createTestMeeting();
+        console.log('Failed to get meeting data:', error);
+        this.showNoMeetingState();
       }
     } catch (error) {
       console.error('Error loading meeting:', error);
@@ -282,19 +274,19 @@ class MeetingPrepPopup {
     document.getElementById('meeting-detected-state').style.display = 'block';
   }
 
-  createTestMeeting() {
-    // Use the meeting data we can see in the popup display
-    this.currentMeeting = {
-      title: 'big nhs meeting',
-      date: '2024-10-23',
-      time: '22:00',
-      attendees: ['connortoorish1@gmail.com', 'ojstanford135@gmail.com', 'Olivia Stanford'],
-      description: 'NHS meeting with team members'
-    };
-    
-    this.displayMeetingInfo(this.currentMeeting);
-    this.showMeetingDetectedState();
-    console.log('Test meeting created and button enabled');
+  filterAttendees(attendees) {
+    const nonPersonTerms = [
+      'google meet', 'google meetmeet', 'google one', 'conference room',
+      'premium plan', 'sales strategy', 'zoom', 'teams', 'webex',
+      'meeting room', 'board room', 'huddle room'
+    ];
+    return attendees.filter(a => {
+      const lower = a.toLowerCase().trim();
+      if (lower.length < 3) return false;
+      if (nonPersonTerms.some(term => lower === term)) return false;
+      if (/^(room|building|floor)\s/i.test(a)) return false;
+      return lower.includes('@') || /^[A-Z][a-z]+ [A-Z][a-z]+/.test(a);
+    });
   }
 
   displayMeetingInfo(meeting) {
@@ -400,26 +392,24 @@ class MeetingPrepPopup {
 
   displayBrief(brief) {
     const briefEl = document.getElementById('brief-content');
-    
-    // Convert markdown to HTML
-    const briefHtml = this.convertBriefToHtml(brief);
-    briefEl.innerHTML = briefHtml;
+
+    const lines = brief.split('\n').filter(l => l.trim());
+    const summaryLines = lines.slice(0, 6).join('\n');
+    const summaryHtml = this.convertBriefToHtml(summaryLines);
+    briefEl.innerHTML = summaryHtml;
     briefEl.style.display = 'block';
-    
-    // Store the full brief data for the viewer
+
     const briefData = {
       meeting: this.currentMeeting,
       brief: brief,
       generated_at: new Date().toISOString()
     };
-    
-    // Save to storage for the full viewer
-    chrome.storage.local.set({ 
+
+    chrome.storage.local.set({
       latestBrief: briefData,
-      [`brief_${Date.now()}`]: briefData 
+      [`brief_${Date.now()}`]: briefData
     });
-    
-    // Add "View Full Brief" button if not already present
+
     this.addViewFullBriefButton();
   }
 
