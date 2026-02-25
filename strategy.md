@@ -4,7 +4,7 @@
 
 ---
 
-## Current Status (Updated Feb 10, 2026)
+## Current Status (Updated Feb 25, 2026)
 
 ### Key Metrics:
 - **Total Installs:** 144 (Aug 2025 - Feb 23, 2026)
@@ -26,10 +26,18 @@
 3. **Analytics table was never created** in Supabase -- all usage tracking has been silent-failing since launch
 4. **Both real users last active in November 2025** -- zero retention
 
-### Recent Changes (v1.3.0 - Live Jan 30, 2026):
-- Prominent "No Meeting Selected" warning state
-- One-click "Open Google Calendar" button
-- Impact unknown due to analytics being broken
+### Recent Changes:
+- **v1.3.0 (Live Jan 30, 2026):** Prominent "No Meeting Selected" warning + one-click Calendar button
+- **v1.4.0 (Submitted Feb 25, 2026):** Removed fake test meeting fallback, fixed attendee parsing, shortened popup brief to summary, deduplicated All Briefs, added retry logic + error handling, added keep-alive cron to prevent Supabase pause
+
+### Fixes Deployed (Feb 25, 2026):
+- Supabase resumed (was paused ~Dec 14, 2025 - Feb 10, 2026)
+- Analytics table confirmed working (had data from Dec 5-14 before pause)
+- Next.js updated 15.5.3 → 15.5.12 (CVE fix)
+- `/api/health` endpoint + Vercel cron every 12h (prevents future Supabase pause)
+- All API calls now retry with backoff + user-friendly error messages
+- Removed dead "Watch how it works" link
+- Consolidated BLUEPRINT.md into this file
 
 ---
 
@@ -39,6 +47,7 @@
 - **v1.1.0:** Analytics tracking added (Nov 23, 2025) -- table never created in DB
 - **v1.2.0:** Try before signup - 10 free briefs without auth (Dec 5, 2025)
 - **v1.3.0:** Prominent no-meeting warning + one-click Calendar button (Jan 30, 2026)
+- **v1.4.0:** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup (Feb 25, 2026 - submitted)
 
 ---
 
@@ -72,31 +81,29 @@ Notable: Feb 23 had a spike of 9 installs (biggest single day).
 
 ---
 
-## Immediate Actions (Feb 2026)
+## Next Steps (Feb 25, 2026)
 
-### 1. Create Analytics Table (MANUAL)
-Run `create-analytics-table.sql` in Supabase SQL Editor. This enables all the tracking code that's already in the extension.
+### All infrastructure fixes deployed. Now wait for data.
 
-### 2. Keep-Alive (DONE)
-- `/api/health` endpoint created
-- Vercel cron pings it every 12 hours
-- Deploy to Vercel to activate
+### Check back: ~March 11, 2026
 
-### 3. Retry Logic & Error Handling (DONE)
-- All API calls now retry up to 2 times with backoff
-- 15-second timeout per request
-- User-friendly error messages for offline/timeout/server-down
+**When returning, do these 3 things:**
+1. Run `node view-analytics.js` in `meeting-prep-landing/` and review the output
+2. Export latest install CSV from Chrome Web Store Developer Dashboard
+3. Check Supabase dashboard → confirm project hasn't paused again
 
-### 4. Monitor Analytics (After table creation)
-```bash
-cd C:\meeting-prep-AI\meeting-prep-landing
-node view-analytics.js
-```
-Events tracked: `popup_opened`, `signup_clicked`, `login_success`, `brief_generated`, `open_calendar_clicked`, `watch_demo_clicked`
+### Decision Point (based on 2 weeks of analytics data):
 
-### 5. Decision Point (After 2 weeks of analytics data)
-- If activation still <5%: Rethink the product UX fundamentally
-- If activation reaches 20%+: Push marketing (Reddit, Product Hunt)
+**Look at `popup_opened` events:**
+- If popup_opened events are coming in but nobody generates a brief → Calendar integration / content script is broken for most users. Fix that.
+- If almost no popup_opened events → people install and forget. Need an onboarding nudge (e.g. notification after install).
+- If briefs are being generated → product works. Push marketing.
+
+**Marketing sequence (don't skip ahead):**
+1. Fix whatever the analytics data reveals
+2. Soft launch on Reddit (r/SideProject, r/chrome_extensions) to test conversion
+3. If Reddit converts at >10% activation → launch on Product Hunt
+4. Product Hunt is a one-shot accelerant, not an experiment. Don't waste it on a broken funnel.
 
 ---
 
@@ -225,7 +232,7 @@ meeting-prep-AI/
 
 ---
 
-*Updated: February 10, 2026*
-*Next Review: After 2 weeks of analytics data*
+*Updated: February 25, 2026*
+*Next Review: March 11, 2026*
 
-**Current Focus:** Fix analytics, prevent Supabase downtime, understand activation gap.
+**Current Focus:** v1.4.0 submitted. All infrastructure fixes deployed. Waiting 2 weeks for analytics data before deciding next move. Do NOT launch Product Hunt until activation is proven.
