@@ -7,24 +7,32 @@
 ## Current Status (Updated Feb 25, 2026)
 
 ### Key Metrics:
-- **Total Installs:** 144 (Aug 2025 - Feb 23, 2026)
-- **Daily Install Rate:** ~1.3 installs/day organic
+- **Total Installs:** ~160 (Aug 2025 - Mar 2, 2026), Chrome Store shows 5 current users
+- **Daily Install Rate:** ~1.3 installs/day organic (US baseline)
 - **Total Sign-Ups:** 2 real users (lhaovogo@gmail.com, webdevwarsaw@gmail.com)
-- **Sign-Up Conversion:** 1.4% (2/144) -- critically low
-- **Uninstalls:** 7 (94% retention rate)
-- **API Costs:** ~$0.01/month (negligible)
+- **Sign-Up Conversion:** 1.4% (2/160) -- critically low
+- **Uninstalls:** 7 total, 0 in Feb 2026 (94% retention rate)
+- **API Costs:** $0.00/month (OpenAI: 2 requests, 674 tokens in Feb). Budget: $120/mo
 - **Revenue:** $0
 
 ### Geography & Platform:
-- **92% United States**
-- **88% ChromeOS** (education/enterprise segment)
-- **13% Windows**
+- **71% United States** (Feb 2026)
+- **27% Germany** (Feb 2026 -- spike event, see below)
+- **69% ChromeOS**, **29% "Other" OS** (Mac/Linux from Germany spike)
+
+### Germany Spike (Feb 23-25, 2026):
+- 12 installs from Germany over 3 days (7→4→1), all "Other" OS (Mac/Linux)
+- Zero uninstalls -- they kept it
+- Zero analytics events -- none opened the popup (Supabase was still coming back up)
+- No public trace found (Reddit, Twitter, blogs) -- likely a private Slack/Discord share
+- v1.4.0 wasn't live yet, so they were on v1.3.0 with broken analytics
 
 ### Critical Problems:
-1. **1.4% install-to-signup conversion** -- 142 out of 144 installers never signed up
-2. **Supabase was paused** for weeks (free tier auto-pause), meaning the backend was down and any user who tried the extension got errors
-3. **Analytics table was never created** in Supabase -- all usage tracking has been silent-failing since launch
+1. **1.4% install-to-signup conversion** -- 158 out of 160 installers never signed up
+2. **Supabase was paused** ~Dec 14, 2025 - Feb 10, 2026 (~2 months of dead backend)
+3. **Analytics now working** -- table confirmed with data from Dec 5-14 + Feb 25
 4. **Both real users last active in November 2025** -- zero retention
+5. **Zero non-test usage recorded since analytics went live** -- no real users have opened the popup
 
 ### Recent Changes:
 - **v1.3.0 (Live Jan 30, 2026):** Prominent "No Meeting Selected" warning + one-click Calendar button
@@ -37,7 +45,12 @@
 - `/api/health` endpoint + Vercel cron every 12h (prevents future Supabase pause)
 - All API calls now retry with backoff + user-friendly error messages
 - Removed dead "Watch how it works" link
+- Removed hardcoded test meeting fallback (was showing fake data to users)
+- Fixed attendee parsing (filtered out "Google Meetmeet", "Conference Room", etc.)
+- Shortened popup brief to summary (users click through to full viewer)
+- Deduplicated All Briefs page
 - Consolidated BLUEPRINT.md into this file
+- **v1.4.0 published and live on Chrome Web Store (Feb 25, 2026)**
 
 ---
 
@@ -47,7 +60,7 @@
 - **v1.1.0:** Analytics tracking added (Nov 23, 2025) -- table never created in DB
 - **v1.2.0:** Try before signup - 10 free briefs without auth (Dec 5, 2025)
 - **v1.3.0:** Prominent no-meeting warning + one-click Calendar button (Jan 30, 2026)
-- **v1.4.0:** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup (Feb 25, 2026 - submitted)
+- **v1.4.0:** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup (Feb 25, 2026 - published)
 
 ---
 
