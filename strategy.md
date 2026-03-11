@@ -85,12 +85,12 @@ Notable: Feb 23 had a spike of 9 installs (biggest single day).
 - **US market fit:** 92% from United States
 - **Economics:** Negligible API costs, high margin potential
 
-## What's Broken
+## What's Broken (as of Feb 25 -- some now fixed)
 
 - **Activation:** Almost nobody converts from install to actual usage
-- **Backend reliability:** Supabase free tier pauses after inactivity, silently breaking the product
-- **Analytics:** Never had working usage tracking -- flying blind
-- **No retry/error handling:** Users who hit a down backend just see errors and leave
+- ~~**Backend reliability:** Supabase free tier pauses after inactivity~~ → FIXED: keep-alive cron every 12h
+- ~~**Analytics:** Never had working usage tracking~~ → FIXED: table exists and is logging events
+- ~~**No retry/error handling:**~~ → FIXED: retry with backoff + user-friendly error messages in v1.4.0
 
 ---
 
@@ -152,10 +152,10 @@ Sales professionals, account executives, consultants, recruiters
 - **Website:** https://meetingprep-ai-vercel.vercel.app
 - **Chrome Store:** https://chromewebstore.google.com/detail/meetingprep-ai/hpbljjdfjeimheogmjcklnohlmpgjlcj
 - **GitHub:** toolio-glitch/meetingprep-ai-landing
-- **Current Version:** v1.3.0 (live)
+- **Current Version:** v1.4.0 (live)
 
 ### Stack:
-- Next.js 15.5.3 + Tailwind CSS v4
+- Next.js 15.5.12 + Tailwind CSS v4
 - Supabase (PostgreSQL + Auth) -- FREE tier
 - OpenAI GPT-4o-mini
 - Chrome Extension Manifest v3
@@ -172,7 +172,7 @@ Chrome Extension → Next.js API (Vercel) → Supabase DB
 - `meetings` -- calendar meeting data
 - `briefs` -- AI-generated briefs
 - `user_subscriptions` -- usage tracking & billing
-- `extension_analytics` -- usage event tracking (NEEDS CREATION)
+- `extension_analytics` -- usage event tracking (live, confirmed working)
 
 ### API Endpoints:
 - `POST /api/auth/login` -- user authentication
@@ -248,4 +248,4 @@ meeting-prep-AI/
 *Updated: February 25, 2026*
 *Next Review: March 11, 2026*
 
-**Current Focus:** v1.4.0 submitted. All infrastructure fixes deployed. Waiting 2 weeks for analytics data before deciding next move. Do NOT launch Product Hunt until activation is proven.
+**Current Focus:** v1.4.0 published and live. All infrastructure fixes deployed. Waiting 2 weeks for analytics data before deciding next move. Do NOT launch Product Hunt until activation is proven.
