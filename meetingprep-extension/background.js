@@ -7,74 +7,100 @@ class BackgroundService {
 
   init() {
     console.log('MeetingPrep AI: Background service started');
-    
-    // Handle extension installation
+
     chrome.runtime.onInstalled.addListener((details) => {
       this.handleInstallation(details);
     });
 
-    // Handle messages from content scripts and popup
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       this.handleMessage(request, sender, sendResponse);
-      return true; // Keep message channel open for async responses
+      return true;
     });
 
-    // Handle extension icon click
-    chrome.action.onClicked.addListener((tab) => {
-      this.handleIconClick(tab);
+    chrome.alarms.onAlarm.addListener((alarm) => {
+      this.handleAlarm(alarm);
     });
 
-    // Monitor tab updates to inject content scripts
     chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       this.handleTabUpdate(tabId, changeInfo, tab);
+    });
+
+    chrome.notifications.onClicked.addListener(() => {
+      chrome.tabs.create({ url: 'https://calendar.google.com' });
     });
   }
 
   handleInstallation(details) {
     if (details.reason === 'install') {
       console.log('MeetingPrep AI: Extension installed');
-      
-      // Open welcome page with onboarding instructions
+
       chrome.tabs.create({
         url: 'https://meetingprep-ai-vercel.vercel.app/welcome'
       });
-      
-      // Set default settings
+
       chrome.storage.local.set({
         settings: {
           autoDetect: true,
           showButtons: true,
           notifications: true
-        }
+        },
+        installedAt: Date.now()
       });
+
+      chrome.notifications.create('welcome', {
+        type: 'basic',
+        iconUrl: 'icon128.png',
+        title: 'MeetingPrep AI is ready!',
+        message: 'Open Google Calendar, click any meeting, then click the MeetingPrep icon to generate your first AI brief.',
+        priority: 2
+      });
+
+      chrome.alarms.create('reminder-1h', { delayInMinutes: 60 });
+      chrome.alarms.create('reminder-24h', { delayInMinutes: 1440 });
+
     } else if (details.reason === 'update') {
-      console.log('MeetingPrep AI: Extension updated');
+      console.log('MeetingPrep AI: Extension updated to', chrome.runtime.getManifest().version);
+    }
+  }
+
+  async handleAlarm(alarm) {
+    const { briefsGenerated } = await chrome.storage.local.get(['briefsGenerated']);
+    if (briefsGenerated && briefsGenerated > 0) return;
+
+    if (alarm.name === 'reminder-1h') {
+      chrome.notifications.create('reminder-1h', {
+        type: 'basic',
+        iconUrl: 'icon128.png',
+        title: 'Try MeetingPrep AI',
+        message: 'You have 10 free AI briefs waiting. Open Google Calendar and click the MeetingPrep icon to try it.',
+        priority: 1
+      });
+    }
+
+    if (alarm.name === 'reminder-24h') {
+      chrome.notifications.create('reminder-24h', {
+        type: 'basic',
+        iconUrl: 'icon128.png',
+        title: 'Got a meeting coming up?',
+        message: 'MeetingPrep AI can generate a brief in 30 seconds. Click here to open Google Calendar.',
+        priority: 1
+      });
     }
   }
 
   async handleMessage(request, sender, sendResponse) {
     try {
       switch (request.action) {
-        case 'openPopup':
-          await this.openPopup();
-          sendResponse({ success: true });
-          break;
-          
-        case 'generateBrief':
-          const brief = await this.generateBrief(request.meetingData);
-          sendResponse({ brief });
-          break;
-          
         case 'saveSettings':
-          await this.saveSettings(request.settings);
+          await chrome.storage.local.set({ settings: request.settings });
           sendResponse({ success: true });
           break;
-          
+
         case 'getSettings':
-          const settings = await this.getSettings();
-          sendResponse({ settings });
+          const result = await chrome.storage.local.get(['settings']);
+          sendResponse({ settings: result.settings || { autoDetect: true, showButtons: true, notifications: true } });
           break;
-          
+
         default:
           sendResponse({ error: 'Unknown action' });
       }
@@ -84,109 +110,17 @@ class BackgroundService {
     }
   }
 
-  handleIconClick(tab) {
-    // Extension icon was clicked - open popup or redirect to calendar
-    if (tab.url.includes('calendar.google.com')) {
-      // Already on calendar, popup will open automatically
-      console.log('On Google Calendar - popup will show meeting options');
-    } else {
-      // Not on calendar, redirect there
-      chrome.tabs.update(tab.id, {
-        url: 'https://calendar.google.com'
-      });
-    }
-  }
-
   handleTabUpdate(tabId, changeInfo, tab) {
-    // Inject content script when Google Calendar loads
-    if (changeInfo.status === 'complete' && 
-        tab.url && 
+    if (changeInfo.status === 'complete' &&
+        tab.url &&
         tab.url.includes('calendar.google.com')) {
-      
-      console.log('Google Calendar detected, ensuring content script is loaded');
-      
-      // Content script should already be injected via manifest
-      // But we can send a message to verify it's working
-      chrome.tabs.sendMessage(tabId, { action: 'ping' }, (response) => {
+      chrome.tabs.sendMessage(tabId, { action: 'ping' }, () => {
         if (chrome.runtime.lastError) {
-          console.log('Content script not responding, may need manual injection');
-        } else {
-          console.log('Content script is active');
+          console.log('Content script not responding on tab', tabId);
         }
       });
     }
   }
-
-  async openPopup() {
-    // This is handled automatically by the browser action
-    // But we could trigger notifications or other actions here
-    console.log('Popup opening requested');
-  }
-
-  async generateBrief(meetingData) {
-    // This would typically call your backend API
-    // For now, return a mock brief
-    console.log('Generating brief for:', meetingData);
-    
-    try {
-      const authData = await chrome.storage.local.get(['authToken']);
-      
-      if (!authData.authToken) {
-        throw new Error('Not authenticated');
-      }
-
-      const response = await fetch('https://meetingprep-ai-vercel.vercel.app/api/extension/generate-brief', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${authData.authToken}`
-        },
-        body: JSON.stringify({ meeting: meetingData })
-      });
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate brief');
-      }
-
-      return data.brief;
-    } catch (error) {
-      console.error('Brief generation failed:', error);
-      throw error;
-    }
-  }
-
-  async saveSettings(settings) {
-    await chrome.storage.local.set({ settings });
-    console.log('Settings saved:', settings);
-  }
-
-  async getSettings() {
-    const result = await chrome.storage.local.get(['settings']);
-    return result.settings || {
-      autoDetect: true,
-      showButtons: true,
-      notifications: true
-    };
-  }
-
-  // Utility method to show notifications
-  async showNotification(title, message, type = 'basic') {
-    const settings = await this.getSettings();
-    
-    if (!settings.notifications) return;
-
-    chrome.notifications.create({
-      type: type,
-      iconUrl: 'icons/icon48.png',
-      title: title,
-      message: message
-    });
-  }
 }
 
-// Initialize background service
 new BackgroundService();
-
-
