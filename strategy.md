@@ -4,53 +4,60 @@
 
 ---
 
-## Current Status (Updated Feb 25, 2026)
+## Current Status (Updated March 25, 2026)
 
 ### Key Metrics:
-- **Total Installs:** ~160 (Aug 2025 - Mar 2, 2026), Chrome Store shows 5 current users
-- **Daily Install Rate:** ~1.3 installs/day organic (US baseline)
-- **Total Sign-Ups:** 2 real users (lhaovogo@gmail.com, webdevwarsaw@gmail.com)
-- **Sign-Up Conversion:** 1.4% (2/160) -- critically low
-- **Uninstalls:** 7 total, 0 in Feb 2026 (94% retention rate)
-- **API Costs:** $0.00/month (OpenAI: 2 requests, 674 tokens in Feb). Budget: $120/mo
+- **Total Installs:** ~207 (Nov 2025 - Mar 23, 2026), Chrome Store shows 4 current users
+- **Daily Install Rate:** ~2.2 installs/day in March (up from ~1.3/day)
+- **Total Sign-Ups:** 2 real users (lhaovogo@gmail.com, webdevwarsaw@gmail.com) -- both inactive since Nov 2025
+- **Sign-Up Conversion:** ~1% (2/207) -- critically low
+- **Uninstalls:** 8 total, 1 in March (96% retention rate)
+- **Real Usage:** 1 anonymous user generated a brief on Mar 16 -- first real non-test usage
+- **API Costs:** ~$0.00/month. Budget: $120/mo
 - **Revenue:** $0
 
 ### Geography & Platform:
-- **71% United States** (Feb 2026)
-- **27% Germany** (Feb 2026 -- spike event, see below)
-- **69% ChromeOS**, **29% "Other" OS** (Mac/Linux from Germany spike)
+- **~50% United States**, **~50% Germany** (March 2026)
+- Germany shifted from one-time spike to persistent ~1 install/day since early March
+- **ChromeOS ~50%** (US users), **"Other" OS ~50%** (Germany -- likely Linux)
 
-### Germany Spike (Feb 23-25, 2026):
-- 12 installs from Germany over 3 days (7→4→1), all "Other" OS (Mac/Linux)
-- Zero uninstalls -- they kept it
-- Zero analytics events -- none opened the popup (Supabase was still coming back up)
-- No public trace found (Reddit, Twitter, blogs) -- likely a private Slack/Discord share
-- v1.4.0 wasn't live yet, so they were on v1.3.0 with broken analytics
+### Germany: From Spike to Steady Source
+- **Feb 23-25 spike:** 19 installs over 3 days (7→4→1→...), all "Other" OS
+- **March 1-23:** ~1 install/day from Germany (26 total), now matching US volume
+- **Zero uninstalls from Germany ever** -- 100% retention
+- No public trace found (Reddit, Twitter, blogs) -- likely word-of-mouth or private share
+- All Germany users were on v1.3.0/v1.4.0 during the spike period
 
 ### Critical Problems:
-1. **1.4% install-to-signup conversion** -- 158 out of 160 installers never signed up
-2. **Supabase was paused** ~Dec 14, 2025 - Feb 10, 2026 (~2 months of dead backend)
-3. **Analytics now working** -- table confirmed with data from Dec 5-14 + Feb 25
-4. **Both real users last active in November 2025** -- zero retention
-5. **Zero non-test usage recorded since analytics went live** -- no real users have opened the popup
+1. **Activation gap:** ~207 installs, only 1 real user has ever opened the popup and used it (Mar 16)
+2. **Onboarding:** Users install but don't know to click the extension icon on Google Calendar
+3. **v1.5.0 deployed today (Mar 25)** with notification nudges to address this
 
-### Recent Changes:
+### Analytics Data (from Supabase, via `node view-analytics.js`):
+- 12 unique extension IDs have opened the popup (mostly test/dev)
+- 73 popup_opened events total (mostly test)
+- 20 brief_generated events (mostly test)
+- **1 real external user:** anonymous, Mar 16 -- opened popup + generated a brief
+- Conclusion: the product works, but almost nobody discovers how to use it
+
+### Version History & Recent Changes:
 - **v1.3.0 (Live Jan 30, 2026):** Prominent "No Meeting Selected" warning + one-click Calendar button
-- **v1.4.0 (Submitted Feb 25, 2026):** Removed fake test meeting fallback, fixed attendee parsing, shortened popup brief to summary, deduplicated All Briefs, added retry logic + error handling, added keep-alive cron to prevent Supabase pause
+- **v1.4.0 (Live Feb 25, 2026):** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup, removed fake test data
+- **v1.5.0 (Live Mar 25, 2026):** Onboarding notifications -- Chrome notification on install + 1h and 24h reminders if user hasn't generated a brief yet
 
-### Fixes Deployed (Feb 25, 2026):
+### Fixes Deployed (cumulative):
 - Supabase resumed (was paused ~Dec 14, 2025 - Feb 10, 2026)
-- Analytics table confirmed working (had data from Dec 5-14 before pause)
+- Analytics table confirmed working
 - Next.js updated 15.5.3 → 15.5.12 (CVE fix)
 - `/api/health` endpoint + Vercel cron every 12h (prevents future Supabase pause)
-- All API calls now retry with backoff + user-friendly error messages
+- All API calls retry with backoff + user-friendly error messages
 - Removed dead "Watch how it works" link
-- Removed hardcoded test meeting fallback (was showing fake data to users)
-- Fixed attendee parsing (filtered out "Google Meetmeet", "Conference Room", etc.)
-- Shortened popup brief to summary (users click through to full viewer)
+- Removed hardcoded test meeting fallback
+- Fixed attendee parsing
+- Shortened popup brief to summary (click through to full viewer)
 - Deduplicated All Briefs page
-- Consolidated BLUEPRINT.md into this file
-- **v1.4.0 published and live on Chrome Web Store (Feb 25, 2026)**
+- Onboarding notification on install + follow-up reminders (v1.5.0)
+- Cleaned up dead code in background.js
 
 ---
 
@@ -60,60 +67,64 @@
 - **v1.1.0:** Analytics tracking added (Nov 23, 2025) -- table never created in DB
 - **v1.2.0:** Try before signup - 10 free briefs without auth (Dec 5, 2025)
 - **v1.3.0:** Prominent no-meeting warning + one-click Calendar button (Jan 30, 2026)
-- **v1.4.0:** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup (Feb 25, 2026 - published)
+- **v1.4.0:** Reliability + UX fixes: retry logic, keep-alive, attendee filtering, brief summary, dedup (Feb 25, 2026)
+- **v1.5.0:** Onboarding notifications: install nudge + 1h/24h reminders (Mar 25, 2026)
 
 ---
 
 ## Install Trend (from Chrome Web Store CSV)
 
-| Month | Installs | Avg/Day |
-|-------|----------|---------|
-| Nov 2025 (from 10th) | 29 | 1.4 |
-| Dec 2025 | 46 | 1.5 |
-| Jan 2026 | 37 | 1.2 |
-| Feb 2026 (to 23rd) | 32 | 1.4 |
+| Month | Installs | Avg/Day | Notes |
+|-------|----------|---------|-------|
+| Nov 2025 (from 10th) | 29 | 1.4 | US only |
+| Dec 2025 | 46 | 1.5 | US only |
+| Jan 2026 | 37 | 1.2 | US + 2 Germany |
+| Feb 2026 | 45 | 1.6 | Germany spike Feb 23-25 (19 installs) |
+| Mar 2026 (to 23rd) | 50 | 2.2 | ~50/50 US/Germany, steady growth |
 
-Notable: Feb 23 had a spike of 9 installs (biggest single day).
+Notable: Install rate nearly doubled in March. Germany now a persistent ~1/day source.
 
 ---
 
 ## What's Working
 
-- **Organic growth:** Consistent ~1.3 installs/day with zero marketing spend
+- **Organic growth:** 2.2 installs/day in March with zero marketing spend (up from 1.3)
 - **Chrome Store SEO:** People are finding and installing it
-- **Retention:** 94% keep it installed (only 7 uninstalls)
-- **US market fit:** 92% from United States
+- **Retention:** 96% keep it installed (8 uninstalls out of 207)
+- **Germany traction:** Persistent ~1/day from Germany, zero uninstalls ever
+- **Product works:** The 1 real user who opened it successfully generated a brief
 - **Economics:** Negligible API costs, high margin potential
 
-## What's Broken (as of Feb 25 -- some now fixed)
+## What's Broken
 
-- **Activation:** Almost nobody converts from install to actual usage
-- ~~**Backend reliability:** Supabase free tier pauses after inactivity~~ → FIXED: keep-alive cron every 12h
-- ~~**Analytics:** Never had working usage tracking~~ → FIXED: table exists and is logging events
-- ~~**No retry/error handling:**~~ → FIXED: retry with backoff + user-friendly error messages in v1.4.0
+- **Activation:** ~207 installs but only 1 real user has opened the popup
+- **Onboarding:** Users don't know to click the extension icon → v1.5.0 adds notifications (just deployed)
+- ~~**Backend reliability:** Supabase free tier pauses after inactivity~~ → FIXED: keep-alive cron
+- ~~**Analytics:** Never had working usage tracking~~ → FIXED: table logging events
+- ~~**No retry/error handling:**~~ → FIXED: retry with backoff in v1.4.0
 
 ---
 
-## Next Steps (Feb 25, 2026)
+## Next Steps (March 25, 2026)
 
-### All infrastructure fixes deployed. Now wait for data.
+### v1.5.0 just deployed with onboarding notifications. Wait for data.
 
-### Check back: ~March 11, 2026
+### Check back: ~April 1-2, 2026
 
 **When returning, do these 3 things:**
 1. Run `node view-analytics.js` in `meeting-prep-landing/` and review the output
 2. Export latest install CSV from Chrome Web Store Developer Dashboard
 3. Check Supabase dashboard → confirm project hasn't paused again
 
-### Decision Point (based on 2 weeks of analytics data):
+### Decision Point (based on 1 week of v1.5.0 data):
 
-**Look at `popup_opened` events:**
-- If popup_opened events are coming in but nobody generates a brief → Calendar integration / content script is broken for most users. Fix that.
-- If almost no popup_opened events → people install and forget. Need an onboarding nudge (e.g. notification after install).
-- If briefs are being generated → product works. Push marketing.
+**Look at `popup_opened` events from new users (after Mar 25):**
+- If popup_opened events increase significantly → notifications are working. Monitor brief generation next.
+- If still almost no popup_opened events → notifications aren't enough. Consider more aggressive onboarding (e.g. auto-open popup on first Calendar visit, or a content script overlay on Google Calendar).
+- If popup opens increase but no briefs generated → UX issue inside the popup. Investigate.
 
 **Marketing sequence (don't skip ahead):**
-1. Fix whatever the analytics data reveals
+1. Confirm v1.5.0 notifications move the activation needle
 2. Soft launch on Reddit (r/SideProject, r/chrome_extensions) to test conversion
 3. If Reddit converts at >10% activation → launch on Product Hunt
 4. Product Hunt is a one-shot accelerant, not an experiment. Don't waste it on a broken funnel.
@@ -152,7 +163,7 @@ Sales professionals, account executives, consultants, recruiters
 - **Website:** https://meetingprep-ai-vercel.vercel.app
 - **Chrome Store:** https://chromewebstore.google.com/detail/meetingprep-ai/hpbljjdfjeimheogmjcklnohlmpgjlcj
 - **GitHub:** toolio-glitch/meetingprep-ai-landing
-- **Current Version:** v1.4.0 (live)
+- **Current Version:** v1.5.0 (live Mar 25, 2026)
 
 ### Stack:
 - Next.js 15.5.12 + Tailwind CSS v4
@@ -245,7 +256,7 @@ meeting-prep-AI/
 
 ---
 
-*Updated: February 25, 2026*
-*Next Review: March 11, 2026*
+*Updated: March 25, 2026*
+*Next Review: April 1-2, 2026*
 
-**Current Focus:** v1.4.0 published and live. All infrastructure fixes deployed. Waiting 2 weeks for analytics data before deciding next move. Do NOT launch Product Hunt until activation is proven.
+**Current Focus:** v1.5.0 live with onboarding notifications. Install rate doubled to 2.2/day. Germany now 50% of installs. Waiting 1 week to see if notifications improve activation. Do NOT launch Product Hunt until activation is proven.
